@@ -103,21 +103,22 @@ proc WindowProc hwnd,wmsg,wparam,lparam
 
 	invoke	glVertex2f,[x],[y] ;Verice 1 Pos(x,y)
 
-	;Limpa Registradores
-	xor	ebx,ebx
-	xor	ecx,ecx
+
 
 	;aux=x+sx
-	mov	ebx,[x]
-	add	ebx,[sx]
-	mov	[aux],ebx
+	fld	[x]
+	fld	[sx]
+	faddp
+	fstp	[aux]
+
 
 	invoke	glVertex2f,[aux],[y] ;Vertice 2 Pos(x+sx,y)
 
 	;aux1=y+sy
-	mov	ecx,[y]
-	add	ecx,[sy]
-	mov	[aux1],ecx
+	fld	[y]
+	fld	[sy]
+	faddp
+	fstp	[aux1]
 
 	invoke	glVertex2f,[aux],[aux1];Vertice 3 Pos(x+sx,y+sy)
 
@@ -134,20 +135,28 @@ proc WindowProc hwnd,wmsg,wparam,lparam
        jmp     .defwndproc
    .goup:
 
-	mov	ecx,[vy]
-	add	[y],ecx
+	fld	[y]
+	fld	[vy]
+	faddp
+	fstp	[y]
 	jmp	.generatefood
    .godown:
-	mov	[vy],-0.007
-	mov	[vx],0.0
+	fld	[y]
+	fld	[vy]
+	fsubp
+	fstp	[y]
 	jmp	.generatefood
    .goright:
-	mov	[vx],0.007
-	mov	[vy],0.0
+	fld	[x]
+	fld	[vx]
+	faddp
+	fstp	[x]
 	jmp	.generatefood
    .goleft:
-	mov	[vx],-0.007
-	mov	[vy],0.0
+	fld	[x]
+	fld	[vx]
+	fsubp
+	fstp	[x]
 	jmp	.generatefood
 
   .wmkeydown:;OnKeyPress
