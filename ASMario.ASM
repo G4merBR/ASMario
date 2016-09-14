@@ -96,28 +96,32 @@ proc WindowProc hwnd,wmsg,wparam,lparam
 	add	[clock],eax
 	;invoke  glTranslatef,[vx],[vy],0.0
       .animation_ok:
-	invoke	glClear,GL_COLOR_BUFFER_BIT
-	invoke	glBegin,GL_QUADS
+	invoke	glClear,GL_COLOR_BUFFER_BIT ;Limpa Tela
 
-	invoke	glColor3f,1.0,0.1,0.1
-	invoke	glVertex3f,[x],[y],0.0
+	invoke	glBegin,GL_QUADS       ;Desenha Quadrado
+	invoke	glColor3f,1.0,1.0,1.0  ;Cor RGB(R,G,B)
 
+	invoke	glVertex2f,[x],[y] ;Verice 1 Pos(x,y)
 
+	;Limpa Registradores
+	xor	ebx,ebx
+	xor	ecx,ecx
+
+	;aux=x+sx
 	mov	ebx,[x]
 	add	ebx,[sx]
 	mov	[aux],ebx
-	invoke	glColor3f,0.1,0.1,0.1
-	invoke	glVertex3f,[aux],[y],0.0
 
+	invoke	glVertex2f,[aux],[y] ;Vertice 2 Pos(x+sx,y)
 
+	;aux1=y+sy
 	mov	ecx,[y]
 	add	ecx,[sy]
 	mov	[aux1],ecx
-	invoke	glColor3f,0.1,0.1,1.0
-	invoke	glVertex3f,[aux],[aux1],0.0
 
-	invoke	glColor3f,1.0,0.1,1.0
-	invoke	glVertex3f,[x],[aux1],0.0
+	invoke	glVertex2f,[aux],[aux1];Vertice 3 Pos(x+sx,y+sy)
+
+	invoke	glVertex2f,[x],[aux1];Vertice 3 Pos(x,y+sy)
 
 	invoke	glEnd
 
@@ -129,7 +133,9 @@ proc WindowProc hwnd,wmsg,wparam,lparam
 
        jmp     .defwndproc
    .goup:
-	add	[y],0.6
+
+	mov	ecx,[vy]
+	add	[y],ecx
 	jmp	.generatefood
    .godown:
 	mov	[vy],-0.007
@@ -143,7 +149,8 @@ proc WindowProc hwnd,wmsg,wparam,lparam
 	mov	[vx],-0.007
 	mov	[vy],0.0
 	jmp	.generatefood
-  .wmkeydown:
+
+  .wmkeydown:;OnKeyPress
 	cmp	[wparam],VK_UP
 	je	.goup
 	cmp	[wparam],VK_DOWN
@@ -171,18 +178,19 @@ section '.data' data readable writeable
   _title db 'KappaPride',0
   _class db 'FASMOPENGL32',0
 
-  theta GLfloat 0.6
+  ;X,Y do Quadrado
   x  GLfloat 0.0
   y  GLfloat 0.0
-
-
-  aux GLfloat 0.0
-  aux1 GLfloat 0.0
+  ;Tamanho do quadrado
   sx GLfloat 0.6
   sy GLfloat 0.6
+  ;Velocidade do quadrado
+  vx GLfloat 0.1
+  vy GLfloat 0.1
 
-  vx GLfloat 0.007
-  vy GLfloat 0.0
+  ;Variaveis auxiliares
+  aux GLfloat 0.0
+  aux1 GLfloat 0.0
 
   wc WNDCLASS 0,WindowProc,0,0,NULL,NULL,NULL,NULL,NULL,_class
 
