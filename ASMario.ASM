@@ -13,6 +13,7 @@ entry start
 
 include 'win32a.inc'
 
+
 include 'opengl.inc'
 
 section '.text' code readable executable
@@ -101,28 +102,28 @@ proc WindowProc hwnd,wmsg,wparam,lparam
 	invoke	glBegin,GL_QUADS       ;Desenha Quadrado
 	invoke	glColor3f,1.0,1.0,1.0  ;Cor RGB(R,G,B)
 
-	invoke	glVertex2f,[x],[y] ;Verice 1 Pos(x,y)
+	invoke	glVertex2f,[player.x],[player.y] ;Verice 1 Pos(x,y)
 
 
 
 	;aux=x+sx
-	fld	[x]
-	fld	[sx]
+	fld	[player.x]
+	fld	[player.sx]
 	faddp
 	fstp	[aux]
 
 
-	invoke	glVertex2f,[aux],[y] ;Vertice 2 Pos(x+sx,y)
+	invoke	glVertex2f,[aux],[player.y] ;Vertice 2 Pos(x+sx,y)
 
 	;aux1=y+sy
-	fld	[y]
-	fld	[sy]
+	fld	[player.y]
+	fld	[player.sy]
 	faddp
 	fstp	[aux1]
 
 	invoke	glVertex2f,[aux],[aux1];Vertice 3 Pos(x+sx,y+sy)
 
-	invoke	glVertex2f,[x],[aux1];Vertice 3 Pos(x,y+sy)
+	invoke	glVertex2f,[player.x],[aux1];Vertice 3 Pos(x,y+sy)
 
 	invoke	glEnd
 
@@ -135,28 +136,28 @@ proc WindowProc hwnd,wmsg,wparam,lparam
        jmp     .defwndproc
    .goup:
 
-	fld	[y]
-	fld	[vy]
+	fld	[player.y]
+	fld	[player.v]
 	faddp
-	fstp	[y]
+	fstp	[player.y]
 	jmp	.generatefood
    .godown:
-	fld	[y]
-	fld	[vy]
+	fld	[player.y]
+	fld	[player.v]
 	fsubp
-	fstp	[y]
+	fstp	[player.y]
 	jmp	.generatefood
    .goright:
-	fld	[x]
-	fld	[vx]
+	fld	[player.x]
+	fld	[player.v]
 	faddp
-	fstp	[x]
+	fstp	[player.x]
 	jmp	.generatefood
    .goleft:
-	fld	[x]
-	fld	[vx]
+	fld	[player.x]
+	fld	[player.v]
 	fsubp
-	fstp	[x]
+	fstp	[player.x]
 	jmp	.generatefood
 
   .wmkeydown:;OnKeyPress
@@ -187,15 +188,20 @@ section '.data' data readable writeable
   _title db 'KappaPride',0
   _class db 'FASMOPENGL32',0
 
-  ;X,Y do Quadrado
-  x  GLfloat 0.0
-  y  GLfloat 0.0
-  ;Tamanho do quadrado
-  sx GLfloat 0.6
-  sy GLfloat 0.6
-  ;Velocidade do quadrado
-  vx GLfloat 0.07
-  vy GLfloat 0.07
+  ;GameObject struct
+  struct GameObject
+   ;Posição
+    x dd ?
+    y dd ?
+   ;Tamanho
+    sx dd ?
+    sy dd ?
+   ;Velocidade
+    v dd ?
+  ends
+
+  ;Player
+  player GameObject 0.0,0.0,0.6,0.6,0.07
 
   ;Variaveis auxiliares
   aux GLfloat 0.0
