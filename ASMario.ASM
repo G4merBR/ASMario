@@ -194,8 +194,8 @@ section '.data' data readable writeable
   sx GLfloat 0.6
   sy GLfloat 0.6
   ;Velocidade do quadrado
-  vx GLfloat 0.1
-  vy GLfloat 0.1
+  vx GLfloat 0.07
+  vy GLfloat 0.07
 
   ;Variaveis auxiliares
   aux GLfloat 0.0
