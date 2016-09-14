@@ -3,9 +3,9 @@
 Remake of Mario Bros made in Flat Assembler + OpenGL
 
 #Crew:
-Joe
-ViVi
-BigMc
+Joe;
+ViVi;
+BigMc;
 Clodomiro
 
 #TODO:
