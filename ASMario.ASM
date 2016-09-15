@@ -101,32 +101,70 @@ proc WindowProc hwnd,wmsg,wparam,lparam
 
 	invoke	glBegin,GL_QUADS       ;Desenha Quadrado
 	invoke	glColor3f,1.0,1.0,1.0  ;Cor RGB(R,G,B)
-
 	invoke	glVertex2f,[player.x],[player.y] ;Verice 1 Pos(x,y)
-
-
-
 	;aux=x+sx
 	fld	[player.x]
 	fld	[player.sx]
 	faddp
 	fstp	[aux]
-
-
 	invoke	glVertex2f,[aux],[player.y] ;Vertice 2 Pos(x+sx,y)
-
 	;aux1=y+sy
 	fld	[player.y]
 	fld	[player.sy]
 	faddp
 	fstp	[aux1]
-
 	invoke	glVertex2f,[aux],[aux1];Vertice 3 Pos(x+sx,y+sy)
-
 	invoke	glVertex2f,[player.x],[aux1];Vertice 3 Pos(x,y+sy)
-
 	invoke	glEnd
 
+	mov	eax,0
+	push	eax	;Salva EAX
+	.renderfloor:
+	;Desenha Chao
+	pop	eax	;Load EAX
+	cmp	eax,2
+	je	.end
+
+	push	eax
+	mov	ebx,20
+	mul	ebx
+	mov	ebx,eax
+
+	pop	eax
+	inc	eax
+	push	eax
+
+	invoke	glBegin,GL_QUADS       ;Desenha Quadrado
+	invoke	glColor3f,1.0,0.1,0.1  ;Cor RGB(R,G,B)
+
+
+	invoke	glVertex2f,[chao+ebx],[chao+ebx+4] ;Verice 1 Pos(x,y)
+	;aux=x+sx
+	mov	ecx,[chao+ebx]
+	mov	[aux],ecx
+	fld	[aux]
+	mov	ecx,[chao+ebx+8]
+	mov	[aux],ecx
+	fld	[aux]
+	faddp
+	fstp	[aux]
+	invoke	glVertex2f,[aux],[chao+ebx+4] ;Vertice 2 Pos(x+sx,y)
+	;aux1=y+sy
+	mov	ecx,[chao+ebx+4]
+	mov	[aux1],ecx
+	fld	[aux1]
+	mov	ecx,[chao+ebx+12]
+	mov	[aux1],ecx
+	fld	[aux1]
+	faddp
+	fstp	[aux1]
+	invoke	glVertex2f,[aux],[aux1];Vertice 3 Pos(x+sx,y+sy)
+	invoke	glVertex2f,[chao+ebx],[aux1];Vertice 3 Pos(x,y+sy)
+	invoke	glEnd
+
+	jmp	.renderfloor
+
+	.end:
 	invoke	SwapBuffers,[hdc]
 	xor	eax,eax
 	jmp	.finish
@@ -201,11 +239,16 @@ section '.data' data readable writeable
   ends
 
   ;Player
-  player GameObject 0.0,0.0,0.6,0.6,0.07
+  player GameObject 0.0,0.0,0.1,0.4,0.07
+  
+  ;Chao
+  chao	GameObject -1.0,-1.0,0.6,0.6,0.07
+	GameObject 0.0,-1.0,0.6,0.6,0.07
 
   ;Variaveis auxiliares
   aux GLfloat 0.0
   aux1 GLfloat 0.0
+
 
   wc WNDCLASS 0,WindowProc,0,0,NULL,NULL,NULL,NULL,NULL,_class
 
