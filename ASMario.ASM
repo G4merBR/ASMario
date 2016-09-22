@@ -1,5 +1,5 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;/
-;      ASM Mario 2016	 ;
+;     GravityGuy 2016	 ;
 ;      [ICT]UNIFESP	 ;
 ;////////////////////////;
 ;////////Made By:////////;
@@ -93,40 +93,26 @@ proc WindowProc hwnd,wmsg,wparam,lparam
 	invoke	GetTickCount
 	sub	eax,[clock]
 	cmp	eax,10
-	jb	.animation_ok
+	jb	.render
 	add	[clock],eax
-	;invoke  glTranslatef,[vx],[vy],0.0
-      .animation_ok:
+
+      .nextframe:
+	invoke	glTranslatef,-0.01,0.0,0.0;move camera
+	call	.goright   ;move player
+
+      .render:
+
 	invoke	glClear,GL_COLOR_BUFFER_BIT ;Limpa Tela
-
-	invoke	glBegin,GL_QUADS       ;Desenha Quadrado
-	invoke	glColor3f,1.0,1.0,1.0  ;Cor RGB(R,G,B)
-	invoke	glVertex2f,[player.x],[player.y] ;Verice 1 Pos(x,y)
-	;aux=x+sx
-	fld	[player.x]
-	fld	[player.sx]
-	faddp
-	fstp	[aux]
-	invoke	glVertex2f,[aux],[player.y] ;Vertice 2 Pos(x+sx,y)
-	;aux1=y+sy
-	fld	[player.y]
-	fld	[player.sy]
-	faddp
-	fstp	[aux1]
-	invoke	glVertex2f,[aux],[aux1];Vertice 3 Pos(x+sx,y+sy)
-	invoke	glVertex2f,[player.x],[aux1];Vertice 3 Pos(x,y+sy)
-	invoke	glEnd
-
+	;Desenha Chao
 	mov	eax,0
 	push	eax	;Salva EAX
 	.renderfloor:
-	;Desenha Chao
 	pop	eax	;Load EAX
 	cmp	eax,2
-	je	.end
+	je	.endrenderfloor
 
 	push	eax
-	mov	ebx,20
+	mov	ebx,16
 	mul	ebx
 	mov	ebx,eax
 
@@ -164,49 +150,118 @@ proc WindowProc hwnd,wmsg,wparam,lparam
 
 	jmp	.renderfloor
 
-	.end:
+	.endrenderfloor:
+	;Desenha Player
+	invoke	glBegin,GL_QUADS       ;Desenha Quadrado
+	invoke	glColor3f,1.0,1.0,1.0  ;Cor RGB(R,G,B)
+	invoke	glVertex2f,[player.x],[player.y] ;Verice 1 Pos(x,y)
+	;aux=x+sx
+	fld	[player.x]
+	fld	[player.sx]
+	faddp
+	fstp	[aux]
+	invoke	glVertex2f,[aux],[player.y] ;Vertice 2 Pos(x+sx,y)
+	;aux1=y+sy
+	fld	[player.y]
+	fld	[player.sy]
+	faddp
+	fstp	[aux1]
+	invoke	glVertex2f,[aux],[aux1];Vertice 3 Pos(x+sx,y+sy)
+	invoke	glVertex2f,[player.x],[aux1];Vertice 3 Pos(x,y+sy)
+	invoke	glEnd
 	invoke	SwapBuffers,[hdc]
+
+
+	;Animações
+
+	.anim:
+	;Inverter Gravidade
+	cmp	[player.anim],0
+	jne	.a0.next
+	cmp	[player.y],1.7
+	jb	.a0.anim
+	mov	[player.y],-1.7
+	mov	[player.anim],1
+	jmp	.a0.next
+	.a0.anim:
+	fld	[player.y]
+	fld	[player.v]
+	faddp
+	fstp	[player.y]
+
+	.a0.next:
+	cmp	[player.anim],1
+	jne	.a0.end
+	cmp	[player.y],-0.41
+	jae	 .a0.next.anim
+	mov	[player.anim],-1
+	jmp	.a0.end
+	.a0.next.anim:
+	fld	[player.y]
+	fld	[player.v]
+	faddp
+	fstp	[player.y]
+
+	.a0.end:
+
 	xor	eax,eax
 	jmp	.finish
 
-   .generatefood:
-
-       jmp     .defwndproc
+   .jump:
+	 mov	 [player.anim],0
+	jmp	.endcombo
    .goup:
-
+	cmp	[player.col],1
+	je	.combokeys
 	fld	[player.y]
 	fld	[player.v]
 	faddp
 	fstp	[player.y]
-	jmp	.generatefood
+	jmp	.combokeys
    .godown:
+	cmp	[player.col],1
+	je	.combokeys
 	fld	[player.y]
 	fld	[player.v]
 	fsubp
 	fstp	[player.y]
-	jmp	.generatefood
+	jmp	.combokeys
    .goright:
+	push ebp
+	mov ebp, esp
+
+	cmp	[player.col],1
+	je	.combokeys
 	fld	[player.x]
 	fld	[player.v]
 	faddp
 	fstp	[player.x]
-	jmp	.generatefood
+
+	mov esp, ebp
+	pop ebp
+	ret
    .goleft:
+	cmp	[player.col],1
+	je	.combokeys
 	fld	[player.x]
 	fld	[player.v]
 	fsubp
 	fstp	[player.x]
-	jmp	.generatefood
+	jmp	.combokeys
 
   .wmkeydown:;OnKeyPress
+
 	cmp	[wparam],VK_UP
 	je	.goup
 	cmp	[wparam],VK_DOWN
 	je	.godown
-	cmp	[wparam],VK_RIGHT
-	je	.goright
+
 	cmp	[wparam],VK_LEFT
 	je	.goleft
+	.combokeys:
+	 cmp	 [wparam],VK_SPACE
+	 je	 .jump
+	 .endcombo:
 	cmp	[wparam],VK_ESCAPE
 	jne	.defwndproc
 
@@ -219,6 +274,20 @@ proc WindowProc hwnd,wmsg,wparam,lparam
   .finish:
 	pop	edi esi ebx
 	ret
+   _movex:
+    push ebp
+    mov ebp, esp
+
+    mov esp, ebp
+    pop ebp
+    ret
+   _movey:
+    push ebp
+    mov ebp, esp
+
+    mov esp, ebp
+    pop ebp
+    ret
 endp
 
 section '.data' data readable writeable
@@ -234,16 +303,29 @@ section '.data' data readable writeable
    ;Tamanho
     sx dd ?
     sy dd ?
+  ends
+   ;Player struct
+  struct Player
+   ;Posição
+    x dd ?
+    y dd ?
+   ;Tamanho
+    sx dd ?
+    sy dd ?
    ;Velocidade
     v dd ?
+   ;Colisoes
+   col db ?
+   ;Animação
+   anim db ?
   ends
-
+  ;IDS DAS ANIMAÇÕES [0=Inverter Gravidade]
   ;Player
-  player GameObject 0.0,0.0,0.1,0.4,0.07
+  player Player 0.0,0.1,0.1,0.4,0.01,0,-1
   
   ;Chao
-  chao	GameObject -1.0,-1.0,0.6,0.6,0.07
-	GameObject 0.0,-1.0,0.6,0.6,0.07
+  chao	GameObject -10.0,0.0,20.0,0.1
+	GameObject 0.5,-0.3,0.6,0.1
 
   ;Variaveis auxiliares
   aux GLfloat 0.0
