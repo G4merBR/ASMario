@@ -1,10 +1,10 @@
-# [ASM]ario
+# GravityGUY
 
-Remake of Mario Bros made in Flat Assembler + OpenGL
+Remake of Gravity GUY made in Flat Assembler + OpenGL
 
 #Crew:
 Joe;
-ViVi;
+AlfaceHard;
 BigMc;
 Clodomiro
 
