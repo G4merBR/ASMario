@@ -97,7 +97,10 @@ proc WindowProc hwnd,wmsg,wparam,lparam
 	add	[clock],eax
 
       .nextframe:
-	invoke	glTranslatef,-0.01,0.0,0.0;move camera
+	fld	[player.v]
+	fchs
+	fstp	[aux]
+	invoke	glTranslatef,[aux],0.0,0.0;move camera
 	call	.goright   ;move player
 
       .render:
@@ -175,17 +178,18 @@ proc WindowProc hwnd,wmsg,wparam,lparam
 	;Animações
 
 	.anim:
+
 	;Inverter Gravidade
 	cmp	[player.anim],0
 	jne	.a0.next
-	cmp	[player.y],1.7
+	cmp	[player.y],  1.7
 	jb	.a0.anim
 	mov	[player.y],-1.7
 	mov	[player.anim],1
 	jmp	.a0.next
 	.a0.anim:
 	fld	[player.y]
-	fld	[player.v]
+	fld	[player.vanim]
 	faddp
 	fstp	[player.y]
 
@@ -194,21 +198,55 @@ proc WindowProc hwnd,wmsg,wparam,lparam
 	jne	.a0.end
 	cmp	[player.y],-0.41
 	jae	 .a0.next.anim
-	mov	[player.anim],-1
+	mov	[player.anim],-2
 	jmp	.a0.end
 	.a0.next.anim:
 	fld	[player.y]
-	fld	[player.v]
+	fld	[player.vanim]
 	faddp
 	fstp	[player.y]
 
 	.a0.end:
+	cmp	[player.anim],2
+	jne	.a1.next
+	cmp	[player.y],-1.7
+	jb	.a1.anim
+	mov	[player.y],1.7
+	mov	[player.anim],3
+	jmp	.a1.next
+	.a1.anim:
+	fld	[player.y]
+	fld	[player.vanim]
+	fsubp
+	fstp	[player.y]
+
+	.a1.next:
+	cmp	[player.anim],3
+	jne	.a1.end
+	cmp	[player.y],0.1
+	jae	 .a1.next.anim
+	mov	[player.anim],-1
+	jmp	.a1.end
+	.a1.next.anim:
+	fld	[player.y]
+	fld	[player.vanim]
+	fsubp
+	fstp	[player.y]
+
+	.a1.end:
 
 	xor	eax,eax
 	jmp	.finish
 
    .jump:
-	 mov	 [player.anim],0
+	cmp	[player.anim],-2
+	je	.elseanim
+	cmp	[player.anim],-1
+	jne	.endcombo
+	mov	[player.anim],0
+	jmp	.endcombo
+	.elseanim:
+	mov	[player.anim],2
 	jmp	.endcombo
    .goup:
 	cmp	[player.col],1
@@ -318,10 +356,11 @@ section '.data' data readable writeable
    col db ?
    ;Animação
    anim db ?
+   vanim dd ?
   ends
   ;IDS DAS ANIMAÇÕES [0=Inverter Gravidade]
   ;Player
-  player Player 0.0,0.1,0.1,0.4,0.01,0,-1
+  player Player 0.0,0.1,0.1,0.4,0.01,0,-1,0.1
   
   ;Chao
   chao	GameObject -10.0,0.0,20.0,0.1
