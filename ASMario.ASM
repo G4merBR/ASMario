@@ -182,16 +182,13 @@ proc WindowProc hwnd,wmsg,wparam,lparam
 	;Inverter Gravidade
 	cmp	[player.anim],0
 	jne	.a0.next
-	cmp	[player.y],  1.7
+	cmp	[player.y], 1.7
 	jb	.a0.anim
 	mov	[player.y],-1.7
 	mov	[player.anim],1
 	jmp	.a0.next
 	.a0.anim:
-	fld	[player.y]
-	fld	[player.vanim]
-	faddp
-	fstp	[player.y]
+	call	.goup
 
 	.a0.next:
 	cmp	[player.anim],1
@@ -201,10 +198,7 @@ proc WindowProc hwnd,wmsg,wparam,lparam
 	mov	[player.anim],-2
 	jmp	.a0.end
 	.a0.next.anim:
-	fld	[player.y]
-	fld	[player.vanim]
-	faddp
-	fstp	[player.y]
+	 call	 .goup
 
 	.a0.end:
 	cmp	[player.anim],2
@@ -215,10 +209,7 @@ proc WindowProc hwnd,wmsg,wparam,lparam
 	mov	[player.anim],3
 	jmp	.a1.next
 	.a1.anim:
-	fld	[player.y]
-	fld	[player.vanim]
-	fsubp
-	fstp	[player.y]
+	call	.godown
 
 	.a1.next:
 	cmp	[player.anim],3
@@ -228,10 +219,7 @@ proc WindowProc hwnd,wmsg,wparam,lparam
 	mov	[player.anim],-1
 	jmp	.a1.end
 	.a1.next.anim:
-	fld	[player.y]
-	fld	[player.vanim]
-	fsubp
-	fstp	[player.y]
+	call	.godown
 
 	.a1.end:
 
@@ -249,27 +237,34 @@ proc WindowProc hwnd,wmsg,wparam,lparam
 	mov	[player.anim],2
 	jmp	.endcombo
    .goup:
-	cmp	[player.col],1
-	je	.combokeys
+	push ebp
+	mov ebp, esp
+
 	fld	[player.y]
-	fld	[player.v]
+	fld	[player.vanim]
 	faddp
 	fstp	[player.y]
-	jmp	.combokeys
+
+	mov esp, ebp
+	pop ebp
+	ret
+
    .godown:
-	cmp	[player.col],1
-	je	.combokeys
+	push ebp
+	mov ebp, esp
+
 	fld	[player.y]
-	fld	[player.v]
+	fld	[player.vanim]
 	fsubp
 	fstp	[player.y]
-	jmp	.combokeys
+
+	mov esp, ebp
+	pop ebp
+	ret
    .goright:
 	push ebp
 	mov ebp, esp
 
-	cmp	[player.col],1
-	je	.combokeys
 	fld	[player.x]
 	fld	[player.v]
 	faddp
@@ -279,13 +274,17 @@ proc WindowProc hwnd,wmsg,wparam,lparam
 	pop ebp
 	ret
    .goleft:
-	cmp	[player.col],1
-	je	.combokeys
+	push ebp
+	mov ebp, esp
+
 	fld	[player.x]
 	fld	[player.v]
 	fsubp
 	fstp	[player.x]
-	jmp	.combokeys
+
+	mov esp, ebp
+	pop ebp
+	ret
 
   .wmkeydown:;OnKeyPress
 
@@ -293,9 +292,10 @@ proc WindowProc hwnd,wmsg,wparam,lparam
 	je	.goup
 	cmp	[wparam],VK_DOWN
 	je	.godown
-
 	cmp	[wparam],VK_LEFT
 	je	.goleft
+	cmp	[wparam],VK_RIGHT
+	je	.goright
 	.combokeys:
 	 cmp	 [wparam],VK_SPACE
 	 je	 .jump
@@ -330,7 +330,7 @@ endp
 
 section '.data' data readable writeable
  ;"Variaveis"
-  _title db 'KappaPride',0
+  _title db 'Gravity Guy',0
   _class db 'FASMOPENGL32',0
 
   ;GameObject struct
