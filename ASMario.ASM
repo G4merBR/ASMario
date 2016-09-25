@@ -4,7 +4,7 @@
 ;////////////////////////;
 ;////////Made By:////////;
 ;////////////////////////;
-; Joe|João|Paulo|Willian ;
+; Joe|Joao|Paulo|Willian ;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 
@@ -175,7 +175,7 @@ proc WindowProc hwnd,wmsg,wparam,lparam
 	invoke	SwapBuffers,[hdc]
 
 
-	;Animações
+	;Animacoes
 
 	.anim:
 
@@ -335,7 +335,7 @@ section '.data' data readable writeable
 
   ;GameObject struct
   struct GameObject
-   ;Posição
+   ;Posicao
     x dd ?
     y dd ?
    ;Tamanho
@@ -344,7 +344,7 @@ section '.data' data readable writeable
   ends
    ;Player struct
   struct Player
-   ;Posição
+   ;Posicao
     x dd ?
     y dd ?
    ;Tamanho
@@ -354,11 +354,11 @@ section '.data' data readable writeable
     v dd ?
    ;Colisoes
    col db ?
-   ;Animação
+   ;Animacao
    anim db ?
    vanim dd ?
   ends
-  ;IDS DAS ANIMAÇÕES [0=Inverter Gravidade]
+  ;IDS DAS ANIMACOES [0=Inverter Gravidade \/,2=Inverter Gravidade /\]
   ;Player
   player Player 0.0,0.1,0.1,0.4,0.01,0,-1,0.1
   
