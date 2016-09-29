@@ -115,13 +115,88 @@ proc WindowProc hwnd,wmsg,wparam,lparam
 	je	.endrenderfloor
 
 	push	eax
-	mov	ebx,16
+	mov	ebx,17	;Tamanho do Objeto
 	mul	ebx
 	mov	ebx,eax
 
 	pop	eax
 	inc	eax
 	push	eax
+
+	;Colisao
+	;Ignorar?
+	mov	ah,[chao+ebx+16]
+	cmp	ah,1
+	jne	.fimcolisao
+	;Eixo x
+	;one.Position.x + one.Size.x >= two.Position.x &&
+	fld	[player.x]
+	fld	[player.sx]
+	faddp
+	fstp   [aux]
+
+	fld    [aux]
+	mov    eax,[chao+ebx]
+	mov    [aux1],eax
+	fld    [aux1]
+	fcompp
+	fstsw ax
+	fwait
+	sahf
+	ja     .fimcolisao
+	;two.Position.x + two.Size.x >= one.Position.x
+	mov	ecx,[chao+ebx]
+	mov	[aux],ecx
+	fld	[aux]
+	mov	ecx,[chao+ebx+8]
+	mov	[aux1],ecx
+	fld	[aux1]
+	faddp
+	fstp	[aux]
+	fld    [aux]
+	fld    [player.x]
+	fcompp
+	fstsw ax
+	fwait
+	sahf
+	ja     .fimcolisao
+	;Eixo Y
+	;one.Position.y + one.Size.y >= two.Position.y &&
+	fld	[player.y]
+	fld	[player.sy]
+	faddp
+	fstp   [aux]
+
+	fld    [aux]
+	mov    eax,[chao+ebx+4]
+	mov    [aux],eax
+	fld    [aux]
+	fcompp
+	fstsw ax
+	fwait
+	sahf
+	ja     .fimcolisao
+	;two.Position.y + two.Size.y >= one.Position.y
+	mov	eax,[chao+ebx+4]
+	mov	[aux],eax
+	fld	[aux]
+	mov	eax,[chao+ebx+12]
+	mov	[aux],eax
+	fld	[aux]
+	faddp
+	fstp	[aux]
+	fld    [aux]
+	fld    [player.y]
+	fcompp
+	fstsw ax
+	fwait
+	sahf
+	ja     .fimcolisao
+
+;	;Colidiu
+	jmp	.renderfloor
+
+	.fimcolisao:
 
 	invoke	glBegin,GL_QUADS       ;Desenha Quadrado
 	invoke	glColor3f,1.0,0.1,0.1  ;Cor RGB(R,G,B)
@@ -312,20 +387,8 @@ proc WindowProc hwnd,wmsg,wparam,lparam
   .finish:
 	pop	edi esi ebx
 	ret
-   _movex:
-    push ebp
-    mov ebp, esp
 
-    mov esp, ebp
-    pop ebp
-    ret
-   _movey:
-    push ebp
-    mov ebp, esp
 
-    mov esp, ebp
-    pop ebp
-    ret
 endp
 
 section '.data' data readable writeable
@@ -341,6 +404,8 @@ section '.data' data readable writeable
    ;Tamanho
     sx dd ?
     sy dd ?
+   ;Colisao
+   col db ?
   ends
    ;Player struct
   struct Player
@@ -357,14 +422,15 @@ section '.data' data readable writeable
    ;Animacao
    anim db ?
    vanim dd ?
+
   ends
   ;IDS DAS ANIMACOES [0=Inverter Gravidade \/,2=Inverter Gravidade /\]
   ;Player
   player Player 0.0,0.1,0.1,0.4,0.01,0,-1,0.1
   
   ;Chao
-  chao	GameObject -10.0,0.0,20.0,0.1
-	GameObject 0.5,-0.3,0.6,0.1
+  chao	GameObject -10.0,0.0,20.0,0.1,0
+	GameObject 0.5,-0.3,0.6,0.1,1
 
   ;Variaveis auxiliares
   aux GLfloat 0.0
