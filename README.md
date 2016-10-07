@@ -9,4 +9,12 @@ BigMc;
 Clodomiro
 
 #TODO:
--A TODO List
+- Resource Editor (100%)
+- Mapa
+- Multiplayer
+- Colisoes (25%)
+  >Detecção (OK)
+  >Física
+  >Maléfica
+  >Benéfica
+
