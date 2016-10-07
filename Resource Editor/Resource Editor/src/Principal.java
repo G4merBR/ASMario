@@ -271,9 +271,11 @@ public class Principal extends BasicGame
 			if (input.isKeyDown(Input.KEY_E))
 				elements=new ArrayList<Tile>();;
 		//Desenha Brush
+		if(isErasing)
+			brushcolor=new Color(0.56f,0.72f,1.0f);
 		g.setColor(brushcolor);
 		g.fillRect(xpos, ypos, size+brushsize, size+brushsize);
-		if(collision)
+		if(collision || isErasing)
 			g.setColor(new Color(1.0f,0.0f,0.0f));
 			g.drawRect(xpos, ypos, size+brushsize, size+brushsize);
 	 
