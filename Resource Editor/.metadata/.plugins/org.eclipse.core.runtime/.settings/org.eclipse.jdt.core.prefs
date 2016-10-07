@@ -6,4 +6,4 @@ org.eclipse.jdt.core.compiler.compliance=1.8
 org.eclipse.jdt.core.compiler.problem.assertIdentifier=error
 org.eclipse.jdt.core.compiler.problem.enumIdentifier=error
 org.eclipse.jdt.core.compiler.source=1.8
-org.eclipse.jdt.core.userLibrary.Slick2D=<?xml version\="1.0" encoding\="UTF-8"?>\n<userlibrary systemlibrary\="false" version\="2">\n\t<archive path\="/home-local/aluno/Documentos/GravityGuy/Resource Editor/slick/lib/jinput.jar"/>\n\t<archive path\="/home-local/aluno/Documentos/GravityGuy/Resource Editor/slick/lib/lwjgl.jar"/>\n\t<archive path\="/home-local/aluno/Documentos/GravityGuy/Resource Editor/slick/lib/lwjgl_util.jar"/>\n\t<archive path\="/home-local/aluno/Documentos/GravityGuy/Resource Editor/slick/lib/slick.jar"/>\n</userlibrary>\n
+org.eclipse.jdt.core.userLibrary.Slick2D=<?xml version\="1.0" encoding\="UTF-8"?>\r\n<userlibrary systemlibrary\="false" version\="2">\r\n\t<archive path\="/Resource Editor/slick/lib/jinput.jar"/>\r\n\t<archive path\="/Resource Editor/slick/lib/lwjgl.jar"/>\r\n\t<archive path\="/Resource Editor/slick/lib/lwjgl_util.jar"/>\r\n\t<archive path\="/Resource Editor/slick/lib/slick.jar"/>\r\n</userlibrary>\r\n

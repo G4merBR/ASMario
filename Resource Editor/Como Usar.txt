@@ -1,0 +1,13 @@
+->Teclas
+Setas direita e esquerda: Move cenario
+L: Carrega cenario da clipboard (ctrl-c para colocar na clipboard)
+S: Salva cenario na clipboard (ctrl-v para colar em outro lugar)
+Mouse esq: Coloca tile
+Mouse dir: Seletor de cores
+Backspace: Liga/Desliga modo borracha
+E: Segurar para habilitar modo borracha
+Ctrl+E: Apaga tudo
++/-: Aumentar/Diminuir brush
+C: Pega cor selecionada
+X: Liga/Desliga colisão
+
