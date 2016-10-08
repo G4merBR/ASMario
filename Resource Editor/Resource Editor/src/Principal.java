@@ -26,15 +26,16 @@ import org.newdawn.slick.geom.Rectangle;
 public class Principal extends BasicGame
 {
 	java.awt.Color color;
-	ArrayList<Tile> elements;
-	boolean isErasing,eraseToggle,collision;
-	int size,brushsize;
+	ArrayList<Tile> elements,selected;
+	boolean isErasing,eraseToggle,collision,isDragging;
+	int size,brushsize,xinitselection,yinitselection;
 	float scale;
 	float offset;
 	float offset_final;
+	int xc,yc;
 	public class Tile{
 		private int x,y,w,h;
-		private Color c;
+		private Color c,originalcolor;
 		public boolean collision;
 		public Tile(int x,int y,int w,int h,Color c,boolean collision){
 			this.x=x;
@@ -42,7 +43,9 @@ public class Principal extends BasicGame
 			this.w=w;
 			this.h=h;
 			this.c=c;
+			this.originalcolor=c;
 			this.collision=collision;
+			
 		}
 		
 		public int getX() {
@@ -83,8 +86,15 @@ public class Principal extends BasicGame
 
 		public void setC(Color c) {
 			this.c = c;
+			this.originalcolor=c;
 		}
+		public void select(){
+			this.c=new Color(this.originalcolor.r*1.9f,this.originalcolor.g*0.4f,this.originalcolor.b*0.4f,0.9f);
 
+		}
+		public void deselect(){
+			this.c=this.originalcolor;
+		}
 
 		
 	}
@@ -104,7 +114,10 @@ public class Principal extends BasicGame
 		
 		color=new java.awt.Color(1f,1f,1f);
 		elements=new ArrayList<Tile>();
+		selected=new ArrayList<Tile>();
 		isErasing=false;
+
+		isDragging=false;
 		offset=0;	
 		size=10;
 		eraseToggle=false;
@@ -178,33 +191,158 @@ public class Principal extends BasicGame
 			//Limpa Cena	
 			if (input.isKeyDown(Input.KEY_E))
 				elements=new ArrayList<Tile>();
-			//Desloca tudo
+			//Desloca
 			if (input.isKeyPressed(Input.KEY_UP)){
-				for(int i=0;i<elements.size();i++){
-					Tile element=elements.get(i);
-					element.setY(element.getY()-size);		
+				if(selected.isEmpty()){
+					for(int i=0;i<elements.size();i++){
+						Tile element=elements.get(i);
+						element.setY(element.getY()-size);		
+					}
+				}else{
+					for(int i=0;i<selected.size();i++){
+						Tile element=selected.get(i);
+						element.setY(element.getY()-size);		
+					}
 				}
 			}
 			if (input.isKeyPressed(Input.KEY_DOWN)){
-				for(int i=0;i<elements.size();i++){
-					Tile element=elements.get(i);
-					element.setY(element.getY()+size);		
-				}
+				if(selected.isEmpty()){
+					for(int i=0;i<elements.size();i++){
+						Tile element=elements.get(i);
+						element.setY(element.getY()+size);		
+					}
+				}else{
+					for(int i=0;i<selected.size();i++){
+						Tile element=selected.get(i);
+						element.setY(element.getY()+size);		
+					}
+				}	
 			}
+			
 			if (input.isKeyPressed(Input.KEY_LEFT)){
-				for(int i=0;i<elements.size();i++){
-					Tile element=elements.get(i);
-					element.setX(element.getX()-size);		
-				}
+				if(selected.isEmpty()){
+					for(int i=0;i<elements.size();i++){
+						Tile element=elements.get(i);
+						element.setX(element.getX()-size);		
+					}
+				}else{
+					for(int i=0;i<selected.size();i++){
+						Tile element=selected.get(i);
+						element.setX(element.getX()-size);		
+					}
+				}	
 			
 			}
 			if (input.isKeyPressed(Input.KEY_RIGHT)){
-				for(int i=0;i<elements.size();i++){
-					Tile element=elements.get(i);
-					element.setX(element.getX()+size);		
+				if(selected.isEmpty()){
+					for(int i=0;i<elements.size();i++){
+						Tile element=elements.get(i);
+						element.setX(element.getX()+size);		
+					}
+				}else{
+					for(int i=0;i<selected.size();i++){
+						Tile element=selected.get(i);
+						element.setX(element.getX()+size);		
+					}
 				}
 			}
+			if (input.isMousePressed(0)) {
+				
+					xinitselection=xpos;
+					yinitselection=ypos;
+	
+			}
+
+			if (input.isMouseButtonDown(0)) {
+				selected.clear();
+				g.drawRect(xinitselection, yinitselection, xpos-xinitselection, ypos-yinitselection);
+
+						for(int k=0;k<elements.size();k++){
+							Tile element=elements.get(k);
+							if(element.getX()+size>=(xinitselection)&& xinitselection+(xpos-offset-xinitselection)-size>=element.getX() &&element.getY()+size>=yinitselection && yinitselection+(ypos-yinitselection)-size>=element.getY()){
+		
+									element.select();
+									selected.add(element);
+				
+							}else if(!selected.contains(element)){
+								element.deselect();
+							}
+				}
+
+
+			}
 		}else{
+			
+			if (input.isKeyPressed(Input.KEY_DELETE)) {
+				for(int k=0;k<selected.size();k++){
+					Tile element=selected.get(k);
+					elements.remove(element);
+				}
+				
+			}
+			if (input.isMouseButtonDown(0)) {
+				if(selected.isEmpty()){
+					//Novo Tile
+					if(isErasing){
+						for(int i=0;i<(brushsize+size)/size;i++){
+							for(int j=0;j<(brushsize+size)/size;j++){
+								for(int k=0;k<elements.size();k++){
+									Tile element=elements.get(k);
+									if(element.getX()==((xpos-offset)+i*size)&&element.getY()==(ypos+j*size)){
+										elements.remove(k);
+										break;
+									}
+								}
+							}
+						}
+					}else{
+					
+						for(int i=0;i<(brushsize+size)/size;i++)
+							for(int j=0;j<(brushsize+size)/size;j++)
+								addTile((int)(xpos-offset)+i*size,ypos+j*size,brushcolor,collision);
+					}
+				}else{
+					if(!isDragging){
+						boolean fora=true;
+					
+						for(int k=0;k<selected.size();k++){
+							Tile element=selected.get(k);
+							if(element.getX()==((xpos-offset))&&element.getY()==(ypos)){
+								fora=false;
+								xc=element.getX();
+								yc=element.getY();
+		
+							}
+						}
+						if(fora){
+							for(int k=0;k<selected.size();k++){
+								Tile element=selected.get(k);
+								element.deselect();
+							}
+							selected= new ArrayList<Tile>();
+						}else{
+							isDragging=true;
+						}
+					
+					}else{
+					
+						for(int k=0;k<selected.size();k++){
+							Tile element=selected.get(k);
+							
+							
+							//int newx=element.getX() + ((int)(xpos-offset)-element.getX()) +(element.getX()-xc) ;
+							//int newy=element.getY()+ ((int)(ypos)-element.getY())+(element.getY()-yc) ;
+							
+							//System.out.println(newx+" "+newy);
+							//element.setX(newx);
+							//element.setY(newy);
+					
+						}
+					}
+				}
+			}else if(isDragging){
+				isDragging=false;
+			}
 			//Liga/Desliga Borracha
 			if (input.isKeyPressed(14)){ 
 				isErasing=!isErasing;
@@ -287,28 +425,7 @@ public class Principal extends BasicGame
 					brushsize-=size;
 		}
 
-		//Novo Tile
-		if (input.isMouseButtonDown(0)) {
-			if(isErasing){
-				for(int i=0;i<(brushsize+size)/size;i++){
-					for(int j=0;j<(brushsize+size)/size;j++){
-						for(int k=0;k<elements.size();k++){
-							Tile element=elements.get(k);
-							if(element.getX()==((xpos-offset)+i*size)&&element.getY()==(ypos+j*size)){
-								elements.remove(k);
-								break;
-							}
-						}
-					}
-				}
-			}else{
-			
-				for(int i=0;i<(brushsize+size)/size;i++)
-					for(int j=0;j<(brushsize+size)/size;j++)
-						addTile((int)(xpos-offset)+i*size,ypos+j*size,brushcolor,collision);
-			}
 
-		}
 
 		//Desenha Brush
 		if(isErasing)
@@ -318,7 +435,8 @@ public class Principal extends BasicGame
 		if(collision || isErasing)
 			g.setColor(new Color(1.0f,0.0f,0.0f));
 			g.drawRect(xpos, ypos, size+brushsize, size+brushsize);
-	 
+		
+		g.setColor(new Color(1.0f,0.0f,0.0f,0.5f));	
 		g.drawString("\nx:"+xpos+" y:"+ypos, xpos, ypos);
 		g.drawString("\nasm_x:"+((xpos/scale)-offset_final)+" asm_y:"+((-ypos/scale)+offset_final-0.03f), xpos, ypos+20);
 	}

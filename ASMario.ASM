@@ -99,17 +99,21 @@ proc WindowProc hwnd,wmsg,wparam,lparam
 
       .nextframe:
 	;Aumenta Velocidade com o Tempo
-	mov	[aux],0.00001
-	fld	[player.v]
-	fld	[aux]
-	faddp
-	fstp	[player.v]
+       ; mov	 [aux],0.00001
+       ; fld	 [player.v]
+      ;  fld	 [aux]
+      ;  faddp
+      ;  fstp	 [player.v]
 
+	cmp	 [player.gcount],1
+	je	.ngrav
+	call	.godown
+	.ngrav:
 	fld	[player.v]
 	fchs
 	fstp	[aux]
-	invoke	glTranslatef,[aux],0.0,0.0;move camera
-	call	.goright   ;move player
+	;invoke  glTranslatef,[aux],0.0,0.0;move camera
+       ; call	 .goright   ;move player
 
       .render:
 
@@ -138,7 +142,7 @@ proc WindowProc hwnd,wmsg,wparam,lparam
 	jne	.fimcolisao
 	;Eixo x
 	;one.Position.x + one.Size.x >= two.Position.x &&
-	fld	[player.x]
+	fld	[player.px]
 	fld	[player.sx]
 	faddp
 	fstp   [aux]
@@ -162,7 +166,7 @@ proc WindowProc hwnd,wmsg,wparam,lparam
 	faddp
 	fstp	[aux]
 	fld    [aux]
-	fld    [player.x]
+	fld    [player.px]
 	fcompp
 	fstsw ax
 	fwait
@@ -170,7 +174,7 @@ proc WindowProc hwnd,wmsg,wparam,lparam
 	ja     .fimcolisao
 	;Eixo Y
 	;one.Position.y + one.Size.y >= two.Position.y &&
-	fld	[player.y]
+	fld	[player.py]
 	fld	[player.sy]
 	faddp
 	fstp   [aux]
@@ -194,7 +198,7 @@ proc WindowProc hwnd,wmsg,wparam,lparam
 	faddp
 	fstp	[aux]
 	fld    [aux]
-	fld    [player.y]
+	fld    [player.py]
 	fcompp
 	fstsw ax
 	fwait
@@ -202,9 +206,11 @@ proc WindowProc hwnd,wmsg,wparam,lparam
 	ja     .fimcolisao
 
 ;	;Colidiu
-	jmp	.renderfloor
+
+	 mov	[player.col],1
 
 	.fimcolisao:
+
 
 	invoke	glBegin,GL_QUADS       ;Desenha Quadrado
 	invoke	glColor3f,[chao+ebx+17],[chao+ebx+21],[chao+ebx+25]  ;Cor RGB(R,G,B)
@@ -237,6 +243,24 @@ proc WindowProc hwnd,wmsg,wparam,lparam
 	jmp	.renderfloor
 
 	.endrenderfloor:
+
+
+	 cmp	 [player.col],0
+	 je	 .naocolidiu
+
+	 mov	 [player.gcount],1
+
+	 mov	eax,[player.x]
+	 mov	[player.px],eax
+	 mov	eax,[player.y]
+	 mov	[player.py],eax
+	 mov	[player.col],0
+	.naocolidiu:
+	 mov	eax,[player.px]
+	 mov	[player.x],eax
+	 mov	eax,[player.py]
+	 mov	[player.y],eax
+
 	;Desenha Player
 
 	mov	eax,0
@@ -366,10 +390,12 @@ proc WindowProc hwnd,wmsg,wparam,lparam
 	push ebp
 	mov ebp, esp
 
+
+
 	fld	[player.y]
 	fld	[player.v]
 	faddp
-	fstp	[player.y]
+	fstp	[player.py]
 
 	mov esp, ebp
 	pop ebp
@@ -380,9 +406,9 @@ proc WindowProc hwnd,wmsg,wparam,lparam
 	mov ebp, esp
 
 	fld	[player.y]
-	fld	[player.v]
+	fld	[player.g]
 	fsubp
-	fstp	[player.y]
+	fstp	[player.py]
 
 	mov esp, ebp
 	pop ebp
@@ -394,7 +420,7 @@ proc WindowProc hwnd,wmsg,wparam,lparam
 	fld	[player.x]
 	fld	[player.v]
 	faddp
-	fstp	[player.x]
+	fstp	[player.px]
 
 	mov esp, ebp
 	pop ebp
@@ -406,7 +432,7 @@ proc WindowProc hwnd,wmsg,wparam,lparam
 	fld	[player.x]
 	fld	[player.v]
 	fsubp
-	fstp	[player.x]
+	fstp	[player.px]
 
 	mov esp, ebp
 	pop ebp
@@ -477,11 +503,17 @@ section '.data' data readable writeable
    ;Animacao
    anim db ?
    vanim dd ?
+   ;Colisao
+   px dd ? ;possivel x
+   py dd ? ;possivel x
+   ;Gravidade
+   g dd ?	;Aceleracao
+   gcount db ?	;Auxiliar
 
   ends
   ;IDS DAS ANIMACOES [0=Inverter Gravidade \/,2=Inverter Gravidade /\]
   ;Player
-  player Player 0.0,0.0,0.23,0.35,0.01,0,-1,0.1
+  player Player 0.0,0.0,0.23,0.35,0.01,0,-1,0.0,0.0,0.0,0.02,0
   ;Player Model
   playermodel GameObject 0.068965554,0.004482778,0.01724138,0.01724138,0,0.2901961,0.19607843,0.0
 GameObject 0.08620691,0.004482778,0.01724138,0.01724138,0,0.2901961,0.19607843,0.0
