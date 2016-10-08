@@ -165,32 +165,57 @@ public class Principal extends BasicGame
 				g.drawRect(element.getX()+offset,  element.getY(),element.getW(), element.getH());
 			}
 		}	
+		//Liga/Desliga Borracha
+		if (input.isKeyPressed(14)){ 
+			isErasing=!isErasing;
+			eraseToggle=true;
+		}
+		if(input.isKeyDown(Input.KEY_E)){
+			isErasing=true;
+			eraseToggle=false;
+		}else if(!eraseToggle)
+			isErasing=false;
 
+		
+		//Gera Codigo
+		if (input.isKeyPressed(Input.KEY_S)){
+			String Final="";
+			for(int i=0;i<elements.size();i++){
+				Tile element=elements.get(i);
+				Color cor=element.getC();
+				if(i!=0)
+					Final+="\n";
+			
+				Final+="GameObject "+((element.getX()/scale)-offset_final)+","+(((-element.getY()/scale)+offset_final-0.03f))+","+element.getW()/scale+","+element.getH()/scale+","+(element.collision?1:0)+","+cor.getRed()/255f+","+cor.getGreen()/255f+","+cor.getBlue()/255f;
+			}
+			Final+="\nchaosize dd "+elements.size();
+
+			StringSelection selection = new StringSelection(Final);
+		    Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+		    clipboard.setContents(selection, selection);
+		
+		} 
 		
 		if(input.isKeyDown(Input.KEY_LCONTROL)){
 			//Muda Escala
-			if (input.isKeyPressed(Input.KEY_SUBTRACT)){
-				scale+=10;
+			if (input.isKeyPressed(Input.KEY_DOWN)){
+				for(int i=0;i<elements.size();i++){
+					Tile element=elements.get(i);
+					element.setW(element.getW()-10);
+					element.setH(element.getH()-10);
+				}
 			}
-			if (input.isKeyPressed(Input.KEY_ADD)){
-				scale-=10;
+			if (input.isKeyPressed(Input.KEY_UP)){
+				for(int i=0;i<elements.size();i++){
+					Tile element=elements.get(i);
+					element.setW(element.getW()+10);
+					element.setH(element.getH()+10);
+				}
 			}
 			//Limpa Cena	
 			if (input.isKeyDown(Input.KEY_E))
 				elements=new ArrayList<Tile>();
 			//Desloca tudo
-			if (input.isKeyPressed(Input.KEY_UP)){
-				for(int i=0;i<elements.size();i++){
-					Tile element=elements.get(i);
-					element.setY(element.getY()-size);		
-				}
-			}
-			if (input.isKeyPressed(Input.KEY_DOWN)){
-				for(int i=0;i<elements.size();i++){
-					Tile element=elements.get(i);
-					element.setY(element.getY()+size);		
-				}
-			}
 			if (input.isKeyPressed(Input.KEY_LEFT)){
 				for(int i=0;i<elements.size();i++){
 					Tile element=elements.get(i);
@@ -204,89 +229,57 @@ public class Principal extends BasicGame
 					element.setX(element.getX()+size);		
 				}
 			}
-		}else{
-			//Liga/Desliga Borracha
-			if (input.isKeyPressed(14)){ 
-				isErasing=!isErasing;
-				eraseToggle=true;
-			}
-			if(input.isKeyDown(Input.KEY_E)){
-				isErasing=true;
-				eraseToggle=false;
-			}else if(!eraseToggle)
-				isErasing=false;
-
-			
-			//Gera Codigo
-			if (input.isKeyPressed(Input.KEY_S)){
-				String Final="";
-				for(int i=0;i<elements.size();i++){
-					Tile element=elements.get(i);
-					Color cor=element.getC();
-					if(i!=0)
-						Final+="\n";
-				
-					Final+="GameObject "+((element.getX()/scale)-offset_final)+","+(((-element.getY()/scale)+offset_final-0.03f))+","+element.getW()/scale+","+element.getH()/scale+","+(element.collision?1:0)+","+cor.getRed()/255f+","+cor.getGreen()/255f+","+cor.getBlue()/255f;
-				}
-				Final+="\nchaosize dd "+elements.size();
-
-				StringSelection selection = new StringSelection(Final);
-			    Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-			    clipboard.setContents(selection, selection);
-			
-			} 
-			//Carrega Codigo	
-			if (input.isKeyPressed(Input.KEY_L)){
-				
-				 Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-				 try {
-					String load= (String) clipboard.getData(DataFlavor.stringFlavor);
-					load=load.replaceAll("GameObject ", "");
-					String[] toLoad=load.split("\n");
-					for(int i=0;i<toLoad.length-1;i++){
-						
-						String[] elemento= toLoad[i].split(",");
-						int tilex=(int)(Math.floor((Float.parseFloat(elemento[0])+offset_final)*scale-(int)offset)/(int)size)*((int) size);
-						int tiley=(int)-(Math.floor((Float.parseFloat(elemento[1])-offset_final+0.03f)*scale)/(int)size)*((int) size);
-				
-						
-						addTile(tilex,tiley,new Color(Float.parseFloat(elemento[5]),Float.parseFloat(elemento[6]),Float.parseFloat(elemento[7])),elemento[4].equals("1"));
-					}
-					//System.out.print(load);
-					
-				} catch (UnsupportedFlavorException | IOException e) {
-					
-					e.printStackTrace();
-				} 
-			}
-			//Colisao
-			if (input.isKeyPressed(Input.KEY_X)){
-				collision=!collision;
-			}
-			//Pega Cor
-			if (input.isKeyPressed(Input.KEY_C)){
-				for(int i=0;i<elements.size();i++){
-					Tile element=elements.get(i);
-					if(element.getX()==(xpos+offset)&&element.getY()==(ypos)){
-						color=new java.awt.Color(element.getC().getRed(),element.getC().getGreen(),element.getC().getBlue());
-						
-					}
-				}
-			}
-			//Move cena
-			if (input.isKeyDown(Input.KEY_RIGHT))
-				offset-=1;
-			if(input.isKeyDown(Input.KEY_LEFT))
-				if(offset<0)
-					offset+=1;
-			//Aumenta brush
-			if (input.isKeyPressed(Input.KEY_ADD))
-				brushsize+=size;
-			if(input.isKeyPressed(Input.KEY_SUBTRACT))
-				if(brushsize>0)
-					brushsize-=size;
 		}
-
+		//Carrega Codigo	
+		if (input.isKeyPressed(Input.KEY_L)){
+			
+			 Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+			 try {
+				String load= (String) clipboard.getData(DataFlavor.stringFlavor);
+				load=load.replaceAll("GameObject ", "");
+				String[] toLoad=load.split("\n");
+				for(int i=0;i<toLoad.length-1;i++){
+					
+					String[] elemento= toLoad[i].split(",");
+					int tilex=(int)(Math.floor((Float.parseFloat(elemento[0])+offset_final)*scale-(int)offset)/(int)size)*((int) size);
+					int tiley=(int)-(Math.floor((Float.parseFloat(elemento[1])-offset_final+0.03f)*scale)/(int)size)*((int) size);
+			
+					
+					addTile(tilex,tiley,new Color(Float.parseFloat(elemento[5]),Float.parseFloat(elemento[6]),Float.parseFloat(elemento[7])),elemento[4].equals("1"));
+				}
+				//System.out.print(load);
+				
+			} catch (UnsupportedFlavorException | IOException e) {
+				
+				e.printStackTrace();
+			} 
+		}
+		//Colisao
+		if (input.isKeyPressed(Input.KEY_X)){
+			collision=!collision;
+		}
+		//Pega Cor
+		if (input.isKeyPressed(Input.KEY_C)){
+			for(int i=0;i<elements.size();i++){
+				Tile element=elements.get(i);
+				if(element.getX()==(xpos+offset)&&element.getY()==(ypos)){
+					color=new java.awt.Color(element.getC().getRed(),element.getC().getGreen(),element.getC().getBlue());
+					
+				}
+			}
+		}
+		//Move cena
+		if (input.isKeyDown(Input.KEY_RIGHT))
+			offset-=1;
+		if(input.isKeyDown(Input.KEY_LEFT))
+			if(offset<0)
+				offset+=1;
+		//Aumenta brush
+		if (input.isKeyPressed(Input.KEY_ADD))
+			brushsize+=size;
+		if(input.isKeyPressed(Input.KEY_SUBTRACT))
+			if(brushsize>0)
+				brushsize-=size;
 		//Novo Tile
 		if (input.isMouseButtonDown(0)) {
 			if(isErasing){
@@ -319,8 +312,7 @@ public class Principal extends BasicGame
 			g.setColor(new Color(1.0f,0.0f,0.0f));
 			g.drawRect(xpos, ypos, size+brushsize, size+brushsize);
 	 
-		g.drawString("\nx:"+xpos+" y:"+ypos, xpos, ypos);
-		g.drawString("\nasm_x:"+((xpos/scale)-offset_final)+" asm_y:"+((-ypos/scale)+offset_final-0.03f), xpos, ypos+20);
+		//g.drawString("\nHowdy!", xpos, ypos);
 	}
 
 	public static void main(String[] args)

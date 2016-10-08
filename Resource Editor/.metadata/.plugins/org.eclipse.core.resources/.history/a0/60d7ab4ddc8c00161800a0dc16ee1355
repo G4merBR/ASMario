@@ -170,10 +170,22 @@ public class Principal extends BasicGame
 		if(input.isKeyDown(Input.KEY_LCONTROL)){
 			//Muda Escala
 			if (input.isKeyPressed(Input.KEY_SUBTRACT)){
-				scale+=10;
+				for(int i=0;i<elements.size();i++){
+					Tile element=elements.get(i);
+					element.setW((int)(element.getW()*0.9));
+					element.setH((int)(element.getH()*0.9));
+					element.setX((int)Math.floor((element.getX()*0.9)/element.getW())*element.getW());	
+					element.setY((int)Math.floor((element.getY()*0.9)/element.getH())*element.getH());	
+				}
 			}
 			if (input.isKeyPressed(Input.KEY_ADD)){
-				scale-=10;
+				for(int i=0;i<elements.size();i++){
+					Tile element=elements.get(i);
+					element.setW((int)(element.getW()*1.1));
+					element.setH((int)(element.getH()*1.1));
+					element.setX((int)(element.getX()*1.1));	
+					element.setY((int)(element.getY()*1.1));	
+				}
 			}
 			//Limpa Cena	
 			if (input.isKeyDown(Input.KEY_E))
@@ -319,8 +331,7 @@ public class Principal extends BasicGame
 			g.setColor(new Color(1.0f,0.0f,0.0f));
 			g.drawRect(xpos, ypos, size+brushsize, size+brushsize);
 	 
-		g.drawString("\nx:"+xpos+" y:"+ypos, xpos, ypos);
-		g.drawString("\nasm_x:"+((xpos/scale)-offset_final)+" asm_y:"+((-ypos/scale)+offset_final-0.03f), xpos, ypos+20);
+		//g.drawString("\nHowdy!", xpos, ypos);
 	}
 
 	public static void main(String[] args)
