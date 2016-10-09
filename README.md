@@ -12,9 +12,9 @@ Remake of Gravity GUY made in Flat Assembler + OpenGL
 - Resource Editor (100%)
 - Mapa
 - Multiplayer
-- Colisoes (25%)<br />
+- Colisoes (50%)<br />
 -- Detecção (OK)<br />
--- Física<br />
+-- Física (OK)<br />
 -- Maléfica<br />
 -- Benéfica<br />
 
