@@ -255,6 +255,7 @@ public class Principal extends BasicGame
 
 			if (input.isMouseButtonDown(0)) {
 				selected.clear();
+				g.setColor(new Color(1.0f,1.0f,1.0f,0.6f));	
 				g.drawRect(xinitselection, yinitselection, xpos-xinitselection, ypos-yinitselection);
 
 						for(int k=0;k<elements.size();k++){

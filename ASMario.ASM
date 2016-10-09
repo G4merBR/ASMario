@@ -248,8 +248,6 @@ proc WindowProc hwnd,wmsg,wparam,lparam
 	 cmp	 [player.col],0
 	 je	 .naocolidiu
 
-	 mov	 [player.gcount],1
-
 	 mov	eax,[player.x]
 	 mov	[player.px],eax
 	 mov	eax,[player.y]
@@ -404,11 +402,116 @@ proc WindowProc hwnd,wmsg,wparam,lparam
    .godown:
 	push ebp
 	mov ebp, esp
-
 	fld	[player.y]
 	fld	[player.g]
 	fsubp
 	fstp	[player.py]
+	;Colisao
+
+	mov	eax,0
+	push	eax	;Salva EAX
+	.loopele:
+	pop	eax	;Load EAX
+	cmp	eax,[chaosize]
+	je	.endloopele
+
+	push	eax
+	mov	ebx,29	;Tamanho do Objeto
+	mul	ebx
+	mov	ebx,eax
+
+	pop	eax
+	inc	eax
+	push	eax
+
+	;Colisao
+	;Ignorar?
+	mov	ah,[chao+ebx+16]
+	cmp	ah,1
+	jne	.fimcolisao1
+	;Eixo x
+	;one.Position.x + one.Size.x >= two.Position.x &&
+	fld	[player.x]
+	fld	[player.sx]
+	faddp
+	fstp   [aux]
+
+	fld    [aux]
+	mov    eax,[chao+ebx]
+	mov    [aux1],eax
+	fld    [aux1]
+	fcompp
+	fstsw ax
+	fwait
+	sahf
+	ja     .fimcolisao1
+	;two.Position.x + two.Size.x >= one.Position.x
+	mov	ecx,[chao+ebx]
+	mov	[aux],ecx
+	fld	[aux]
+	mov	ecx,[chao+ebx+8]
+	mov	[aux1],ecx
+	fld	[aux1]
+	faddp
+	fstp	[aux]
+	fld    [aux]
+	fld    [player.x]
+	fcompp
+	fstsw ax
+	fwait
+	sahf
+	ja     .fimcolisao1
+	;Eixo Y
+	;one.Position.y + one.Size.y >= two.Position.y &&
+	fld	[player.py]
+	fld	[player.sy]
+	faddp
+	fstp   [aux]
+
+	fld    [aux]
+	mov    eax,[chao+ebx+4]
+	mov    [aux],eax
+	fld    [aux]
+	fcompp
+	fstsw ax
+	fwait
+	sahf
+	ja     .fimcolisao1
+	;two.Position.y + two.Size.y >= one.Position.y
+	mov	eax,[chao+ebx+4]
+	mov	[aux],eax
+	fld	[aux]
+	mov	eax,[chao+ebx+12]
+	mov	[aux],eax
+	fld	[aux]
+	faddp
+	fstp	[aux]
+	fld    [aux]
+	fld    [player.py]
+	fcompp
+	fstsw ax
+	fwait
+	sahf
+	ja     .fimcolisao1
+
+;	;Colidiu
+
+	 mov	[player.col],1
+
+	.fimcolisao1:
+	jmp    .loopele
+	.endloopele:
+	 cmp	 [player.col],0
+	 je	 .naocolidiu1
+
+	 mov	[player.gcount],1
+	 mov	eax,[player.y]
+	 mov	[player.py],eax
+	 mov	[player.col],0
+	.naocolidiu1:
+	 mov	eax,[player.py]
+	 mov	[player.y],eax
+
 
 	mov esp, ebp
 	pop ebp
