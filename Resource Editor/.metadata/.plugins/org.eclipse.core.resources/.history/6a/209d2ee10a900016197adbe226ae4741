@@ -397,7 +397,7 @@ public class Principal extends BasicGame
 						}
 					
 					}else{
-					/*
+					
 						for(int k=0;k<selected.size();k++){
 							Tile element=selected.get(k);
 							
@@ -408,7 +408,7 @@ public class Principal extends BasicGame
 							element.setX(element.getX()+((xpos-xc)));
 							//element.setY(newy);
 					
-						}*/
+						}
 					}
 				}
 			}else if(isDragging){

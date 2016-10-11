@@ -402,11 +402,11 @@ public class Principal extends BasicGame
 							Tile element=selected.get(k);
 							
 							
-							//int newx=xpos+(-xc+element.getX()+(int)offset) ;
-							//int newy=ypos+(-yc+element.getY()) ;	
+							int newx=xpos+Math.abs(xc-element.getX()+(int)offset) ;
+							int newy=ypos+Math.abs(yc-element.getY()) ;	
 							//System.out.println(newx+" "+newy);
-							element.setX(element.getX()+((xpos-xc)));
-							//element.setY(newy);
+							element.setX(newx);
+							element.setY(newy);
 					
 						}*/
 					}

@@ -92,9 +92,6 @@ public class Principal extends BasicGame
 		public Color getC() {
 			return c;
 		}
-		public Color getOC() {
-			return this.originalcolor;
-		}
 
 		public void setC(Color c) {
 			this.c = c;
@@ -280,13 +277,9 @@ public class Principal extends BasicGame
 	
 			}
 			if(input.isKeyPressed(Input.KEY_C)){
-				Tile ref=selected.get(0);
-				int x,y;
-				x=ref.getX();
-				y=ref.getY();
 				for(int i=0;i<selected.size();i++){
 					Tile element= selected.get(i);
-					tileclipboard.add(new Tile(-x+element.getX()+(int)offset,(-y+element.getY()),element.getH(),element.getW(),element.getOC(),element.collision));
+					tileclipboard.add(new Tile((int) (-element.getX()+xpos-offset),-element.getY()+ypos,element.getH(),element.getW(),element.getC(),element.collision));
 				}
 			}
 			if(input.isKeyPressed(Input.KEY_V)){
@@ -397,18 +390,19 @@ public class Principal extends BasicGame
 						}
 					
 					}else{
-					/*
+					
 						for(int k=0;k<selected.size();k++){
 							Tile element=selected.get(k);
 							
 							
-							//int newx=xpos+(-xc+element.getX()+(int)offset) ;
-							//int newy=ypos+(-yc+element.getY()) ;	
+							//int newx=element.getX() + ((int)(xpos-offset)-element.getX()) +(element.getX()-xc) ;
+							//int newy=element.getY()+ ((int)(ypos)-element.getY())+(element.getY()-yc) ;
+							
 							//System.out.println(newx+" "+newy);
-							element.setX(element.getX()+((xpos-xc)));
+							//element.setX(newx);
 							//element.setY(newy);
 					
-						}*/
+						}
 					}
 				}
 			}else if(isDragging){

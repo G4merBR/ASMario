@@ -16,7 +16,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Stack;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -34,8 +33,7 @@ import org.newdawn.slick.geom.Rectangle;
 public class Principal extends BasicGame
 {
 	java.awt.Color color;
-	ArrayList<Tile> elements,selected,tileclipboard;
-	Stack<Tile> undo;
+	ArrayList<Tile> elements,selected;
 	boolean isErasing,eraseToggle,collision,isDragging;
 	int size,brushsize,xinitselection,yinitselection;
 	float scale;
@@ -92,9 +90,6 @@ public class Principal extends BasicGame
 		public Color getC() {
 			return c;
 		}
-		public Color getOC() {
-			return this.originalcolor;
-		}
 
 		public void setC(Color c) {
 			this.c = c;
@@ -127,8 +122,6 @@ public class Principal extends BasicGame
 		color=new java.awt.Color(1f,1f,1f);
 		elements=new ArrayList<Tile>();
 		selected=new ArrayList<Tile>();
-		tileclipboard=new ArrayList<Tile>();
-		undo= new Stack<Tile>();
 		isErasing=false;
 
 		isDragging=false;
@@ -161,22 +154,10 @@ public class Principal extends BasicGame
 			}
 		}
 		if(!existe){
-			Tile t=new Tile(xpos, ypos, size, size,brushcolor,collision);
-			undo.push(t);
-			elements.add(t);
+			elements.add(new Tile(xpos, ypos, size, size,brushcolor,collision));
 			
 			//elements.sort(new customComparator());
 		}
-	}
-	public boolean removeTile(Tile element){
-		undo.push(element);
-		return elements.remove(element);
-
-	}
-	public void removeTile(int element){
-		undo.push(elements.get(element));
-		
-
 	}
 
 	@Override
@@ -279,28 +260,7 @@ public class Principal extends BasicGame
 					yinitselection=ypos;
 	
 			}
-			if(input.isKeyPressed(Input.KEY_C)){
-				Tile ref=selected.get(0);
-				int x,y;
-				x=ref.getX();
-				y=ref.getY();
-				for(int i=0;i<selected.size();i++){
-					Tile element= selected.get(i);
-					tileclipboard.add(new Tile(-x+element.getX()+(int)offset,(-y+element.getY()),element.getH(),element.getW(),element.getOC(),element.collision));
-				}
-			}
-			if(input.isKeyPressed(Input.KEY_V)){
-				for(int i=0;i<tileclipboard.size();i++){
-					Tile element= tileclipboard.get(i);
-					addTile((int) (element.getX()+(xpos-offset)),element.getY()+ypos,element.getC(),element.collision);
-				}
-			}
-			if(input.isKeyPressed(Input.KEY_Z)){
-				Tile element=undo.pop();
-				if(!elements.remove(element))
-					elements.add(element);
-				
-			}
+
 
 			if (input.isMouseButtonDown(0)) {
 				selected.clear();
@@ -322,7 +282,6 @@ public class Principal extends BasicGame
 
 			}
 		}else{
-
 			if(input.isKeyPressed(Input.KEY_I)){
 				try {
 					 Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
@@ -348,7 +307,7 @@ public class Principal extends BasicGame
 			if (input.isKeyPressed(Input.KEY_DELETE)) {
 				for(int k=0;k<selected.size();k++){
 					Tile element=selected.get(k);
-					removeTile(element);
+					elements.remove(element);
 				}
 				
 			}
@@ -361,7 +320,7 @@ public class Principal extends BasicGame
 								for(int k=0;k<elements.size();k++){
 									Tile element=elements.get(k);
 									if(element.getX()==((xpos-offset)+i*size)&&element.getY()==(ypos+j*size)){
-										removeTile(element);
+										elements.remove(k);
 										break;
 									}
 								}
@@ -397,18 +356,19 @@ public class Principal extends BasicGame
 						}
 					
 					}else{
-					/*
+					
 						for(int k=0;k<selected.size();k++){
 							Tile element=selected.get(k);
 							
 							
-							//int newx=xpos+(-xc+element.getX()+(int)offset) ;
-							//int newy=ypos+(-yc+element.getY()) ;	
+							//int newx=element.getX() + ((int)(xpos-offset)-element.getX()) +(element.getX()-xc) ;
+							//int newy=element.getY()+ ((int)(ypos)-element.getY())+(element.getY()-yc) ;
+							
 							//System.out.println(newx+" "+newy);
-							element.setX(element.getX()+((xpos-xc)));
+							//element.setX(newx);
 							//element.setY(newy);
 					
-						}*/
+						}
 					}
 				}
 			}else if(isDragging){
