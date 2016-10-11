@@ -114,6 +114,15 @@ proc WindowProc hwnd,wmsg,wparam,lparam
 	;je	 .ngrav
 	call	.godown
 	.ngrav:
+	fld	[minx]
+	fld	[player.v]
+	faddp
+	fstp	[minx]
+	fld	[maxx]
+	fld	[player.v]
+	faddp
+	fstp	[maxx]
+
 	fld	[player.v]
 	fchs
 	fstp	[aux]
@@ -197,6 +206,22 @@ proc WindowProc hwnd,wmsg,wparam,lparam
 
        .ingame:
        ;Morreu?
+	fld	[player.x]
+	fld	[maxx]
+	fcompp
+	fstsw ax
+	fwait
+	sahf
+	jbe	.die
+
+	fld	[player.x]
+	fld	[minx]
+	fcompp
+	fstsw ax
+	fwait
+	sahf
+	jae	.die
+
 	fld	[player.y]
 	fld	[maxy]
 	fcompp
@@ -606,7 +631,6 @@ proc WindowProc hwnd,wmsg,wparam,lparam
 	je	.inverteg
 	cmp	[wparam],VK_ESCAPE
 	jne	.defwndproc
-
   .wmdestroy:
 	invoke	wglMakeCurrent,0,0
 	invoke	wglDeleteContext,[hrc]
@@ -630,6 +654,8 @@ section '.data' data readable writeable
   ;2 - Morto
   screen db 1
 
+  maxx dd 1.3
+  minx dd -1.3
   maxy dd 1.2
   miny dd -1.3
   ;GameObject struct
