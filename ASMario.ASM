@@ -568,7 +568,7 @@ section '.data' data readable writeable
   ends
   ;IDS DAS ANIMACOES [0=Inverter Gravidade \/,2=Inverter Gravidade /\]
   ;Player
-  player Player 0.0,0.0,0.23,0.35,0.01,0,-1,0.0,0.0,0.0,0.02,0
+  player Player 0.0,0.0,0.23,0.37,0.012,0,-1,0.0,0.0,0.0,0.03,0
   ;Player Model
   playermodel GameObject 0.068965554,0.004482778,0.01724138,0.01724138,0,0.2901961,0.19607843,0.0
 GameObject 0.08620691,0.004482778,0.01724138,0.01724138,0,0.2901961,0.19607843,0.0
