@@ -329,9 +329,14 @@ proc WindowProc hwnd,wmsg,wparam,lparam
 	jmp	.finish
 
   .inverteg:
+	cmp	[player.gcount],1
+	jne	.finverteg
+	mov	[player.gcount],0
 	fld	[player.g]
 	fchs
 	fstp	[player.g]
+	.finverteg:
+	ret
    .goup:
 	push ebp
 	mov ebp, esp
@@ -451,6 +456,7 @@ proc WindowProc hwnd,wmsg,wparam,lparam
 	 cmp	 [player.col],0
 	 je	 .naocolidiu1
 
+	 mov	[player.gcount],1
 	 mov	eax,[player.y]
 	 mov	[player.py],eax
 	 mov	[player.col],0
@@ -556,12 +562,13 @@ section '.data' data readable writeable
    py dd ? ;possivel x
    ;Gravidade
    g dd ?	;Aceleracao
+   gcount db ?
 
 
   ends
   ;IDS DAS ANIMACOES [0=Inverter Gravidade \/,2=Inverter Gravidade /\]
   ;Player
-  player Player 0.0,0.0,0.23,0.35,0.01,0,-1,0.0,0.0,0.0,0.02
+  player Player 0.0,0.0,0.23,0.35,0.01,0,-1,0.0,0.0,0.0,0.02,0
   ;Player Model
   playermodel GameObject 0.068965554,0.004482778,0.01724138,0.01724138,0,0.2901961,0.19607843,0.0
 GameObject 0.08620691,0.004482778,0.01724138,0.01724138,0,0.2901961,0.19607843,0.0
