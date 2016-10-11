@@ -2,20 +2,20 @@
 <section name="Workbench">
 	<section name="org.eclipse.ui.texteditor.FindReplaceDialog">
 		<item value="false" key="isRegEx"/>
-		<item value="select" key="selection"/>
+		<item value="addTile" key="selection"/>
 		<item value="false" key="casesensitive"/>
 		<item value="false" key="incremental"/>
 		<item value="true" key="wrap"/>
 		<item value="false" key="wholeword"/>
 		<list key="findhistory">
-			<item value="select"/>
-			<item value="xc"/>
-			<item value="addTile"/>
+			<item value="addtile"/>
 			<item value="brushcolor"/>
-			<item value="mouse"/>
-			<item value="mouseCallback"/>
-			<item value="callback"/>
-			<item value="setup a ke"/>
+			<item value="addTile"/>
+			<item value="clr"/>
+			<item value="color"/>
+			<item value="novo"/>
+			<item value="clipboard"/>
+			<item value="insert"/>
 		</list>
 		<list key="replacehistory">
 		</list>
@@ -24,7 +24,7 @@
 		<item value="284" key="DIALOG_WIDTH"/>
 		<item value="1|Segoe UI|9.0|0|WINDOWS|1|-12|0|0|0|400|0|0|0|1|0|0|0|0|Segoe UI" key="DIALOG_FONT_NAME"/>
 		<item value="391" key="DIALOG_HEIGHT"/>
-		<item value="974" key="DIALOG_X_ORIGIN"/>
-		<item value="317" key="DIALOG_Y_ORIGIN"/>
+		<item value="1097" key="DIALOG_X_ORIGIN"/>
+		<item value="291" key="DIALOG_Y_ORIGIN"/>
 	</section>
 </section>

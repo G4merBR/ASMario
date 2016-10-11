@@ -260,7 +260,27 @@ public class Principal extends BasicGame
 					yinitselection=ypos;
 	
 			}
+			if(input.isKeyPressed(Input.KEY_I)){
+				try {
+					 Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+					 System.out.println(clipboard.getData(DataFlavor.javaFileListFlavor).toString());
+					/*BufferedImage image=ImageIO.read(  );
 
+					for (int y = 0; y < image.getHeight(); y++) {
+					    for (int x = 0; x < image.getWidth(); x++) {
+				
+					          int  clr   = image.getRGB(x, y); 
+					          int  red   = (clr & 0x00ff0000) >> 16;
+					          int  green = (clr & 0x0000ff00) >> 8;
+					          int  blue  =  clr & 0x000000ff;
+					          addTile((int)(xpos-offset)+x,ypos+y,new Color(red,green,blue),collision);
+					    }
+					}*/
+				} catch (Exception e) {
+					
+					e.printStackTrace();
+				}
+			}
 
 			if (input.isMouseButtonDown(0)) {
 				selected.clear();
@@ -282,28 +302,7 @@ public class Principal extends BasicGame
 
 			}
 		}else{
-			if(input.isKeyPressed(Input.KEY_I)){
-				try {
-					 Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-					 List<File>  arquivos=(List<File>) clipboard.getData(DataFlavor.javaFileListFlavor);
-					BufferedImage image=ImageIO.read( arquivos.get(0) );
-
-					for (int y = 0; y < image.getHeight(); y++) {
-					    for (int x = 0; x < image.getWidth(); x++) {
-				
-					          int  clr   = image.getRGB(x, y); 
-					          int  red   = (clr & 0x00ff0000) >> 16;
-					          int  green = (clr & 0x0000ff00) >> 8;
-					          int  blue  =  clr & 0x000000ff;
-					    
-					          addTile((int)(xpos-offset)+x*size,ypos+y*size,new Color(red,green,blue),false);
-					    }
-					}
-				} catch (Exception e) {
-					
-					e.printStackTrace();
-				}
-			}
+			
 			if (input.isKeyPressed(Input.KEY_DELETE)) {
 				for(int k=0;k<selected.size();k++){
 					Tile element=selected.get(k);

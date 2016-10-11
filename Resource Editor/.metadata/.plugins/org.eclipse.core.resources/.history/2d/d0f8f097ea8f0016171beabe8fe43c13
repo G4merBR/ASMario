@@ -295,7 +295,8 @@ public class Principal extends BasicGame
 					          int  red   = (clr & 0x00ff0000) >> 16;
 					          int  green = (clr & 0x0000ff00) >> 8;
 					          int  blue  =  clr & 0x000000ff;
-					    
+					          System.out.println(red);
+					          
 					          addTile((int)(xpos-offset)+x*size,ypos+y*size,new Color(red,green,blue),false);
 					    }
 					}

@@ -9,10 +9,8 @@ import java.awt.datatransfer.StringSelection;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -159,7 +157,38 @@ public class Principal extends BasicGame
 			//elements.sort(new customComparator());
 		}
 	}
+	public Image getImageFromClipboard()
+			throws Exception
+			{
+			  Transferable transferable = Toolkit.getDefaultToolkit().getSystemClipboard().getContents(null);
+			  if (transferable != null && transferable.isDataFlavorSupported(DataFlavor.imageFlavor))
+			  {
+			    return (Image) transferable.getTransferData(DataFlavor.imageFlavor);
+			  }
+			  else
+			  {
+			    return null;
+			  }
+			}
+	public static BufferedImage toBufferedImage(Image img)
+	{
+	    if (img instanceof BufferedImage)
+	    {
+	        return (BufferedImage) img;
+	    }
 
+	    // Create a buffered image with transparency
+	    BufferedImage bimage = new BufferedImage(img.getWidth(null), img.getHeight(null), BufferedImage.TYPE_INT_ARGB);
+
+	    // Draw the image on to the buffered image
+	    Graphics2D bGr = bimage.createGraphics();
+	    bGr.drawImage(img, 0, 0, null);
+	    bGr.dispose();
+
+	    // Return the buffered image
+	    return bimage;
+	}
+	Image imagem;
 	@Override
 	public void render(GameContainer gc, Graphics g) throws SlickException
 	{
@@ -261,7 +290,6 @@ public class Principal extends BasicGame
 	
 			}
 
-
 			if (input.isMouseButtonDown(0)) {
 				selected.clear();
 				g.setColor(new Color(1.0f,1.0f,1.0f,0.6f));	
@@ -284,10 +312,18 @@ public class Principal extends BasicGame
 		}else{
 			if(input.isKeyPressed(Input.KEY_I)){
 				try {
-					 Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-					 List<File>  arquivos=(List<File>) clipboard.getData(DataFlavor.javaFileListFlavor);
-					BufferedImage image=ImageIO.read( arquivos.get(0) );
+					imagem =getImageFromClipboard();
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+			if(input.isKeyPressed(Input.KEY_INSERT)){
+				try {
+					
+					BufferedImage image;
 
+					image = toBufferedImage(imagem);
 					for (int y = 0; y < image.getHeight(); y++) {
 					    for (int x = 0; x < image.getWidth(); x++) {
 				
@@ -295,8 +331,7 @@ public class Principal extends BasicGame
 					          int  red   = (clr & 0x00ff0000) >> 16;
 					          int  green = (clr & 0x0000ff00) >> 8;
 					          int  blue  =  clr & 0x000000ff;
-					    
-					          addTile((int)(xpos-offset)+x*size,ypos+y*size,new Color(red,green,blue),false);
+					          addTile((int)(xpos-offset)+x,ypos+y,new Color(red,green,blue),collision);
 					    }
 					}
 				} catch (Exception e) {
@@ -304,6 +339,8 @@ public class Principal extends BasicGame
 					e.printStackTrace();
 				}
 			}
+
+			
 			if (input.isKeyPressed(Input.KEY_DELETE)) {
 				for(int k=0;k<selected.size();k++){
 					Tile element=selected.get(k);
