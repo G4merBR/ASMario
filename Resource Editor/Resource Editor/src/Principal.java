@@ -37,7 +37,7 @@ public class Principal extends BasicGame
 	ArrayList<Tile> elements,selected,tileclipboard;
 	Stack<Tile> undo;
 	boolean isErasing,eraseToggle,collision,isDragging;
-	int size,brushsize,xinitselection,yinitselection;
+	int size,brushsize,xinitselection,yinitselection,count;
 	float scale;
 	float offset;
 	float offset_final;
@@ -130,7 +130,7 @@ public class Principal extends BasicGame
 		tileclipboard=new ArrayList<Tile>();
 		undo= new Stack<Tile>();
 		isErasing=false;
-
+		count=0;
 		isDragging=false;
 		offset=0;	
 		size=10;
@@ -483,11 +483,24 @@ public class Principal extends BasicGame
 				}
 			}
 			//Move cena
-			if (input.isKeyDown(Input.KEY_RIGHT))
-				offset-=1;
-			if(input.isKeyDown(Input.KEY_LEFT))
-				if(offset<0)
-					offset+=1;
+			if (input.isKeyDown(Input.KEY_RIGHT)){
+				if(count>=10){
+					offset-=size;
+					count=0;
+				}
+				count++;
+			}
+			else if(input.isKeyDown(Input.KEY_LEFT)){
+				if(offset<0){
+					if(count>=10){
+					offset+=size;
+					count=0;
+					}	
+					count++;
+				}
+			}
+			else
+				count=0;
 			//Aumenta brush
 			if (input.isKeyPressed(Input.KEY_ADD))
 				brushsize+=size;
