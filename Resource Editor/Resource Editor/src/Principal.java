@@ -476,7 +476,7 @@ public class Principal extends BasicGame
 			if (input.isKeyPressed(Input.KEY_C)){
 				for(int i=0;i<elements.size();i++){
 					Tile element=elements.get(i);
-					if(element.getX()==(xpos+offset)&&element.getY()==(ypos)){
+					if(element.getX()==(xpos-offset)&&element.getY()==(ypos)){
 						color=new java.awt.Color(element.getC().getRed(),element.getC().getGreen(),element.getC().getBlue());
 						
 					}
