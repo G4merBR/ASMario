@@ -558,6 +558,7 @@ proc WindowProc hwnd,wmsg,wparam,lparam
 	mov	ah,[chao+ebx+16]
 	cmp	ah,1
 	jne	.fimcolisao1
+
 	;Eixo x
 	;one.Position.x + one.Size.x >= two.Position.x &&
 	fld	[player.x]
@@ -626,18 +627,20 @@ proc WindowProc hwnd,wmsg,wparam,lparam
 ;	;Colidiu
 
 	 mov	[player.col],1
-
 	.fimcolisao1:
 	jmp    .loopele
 	.endloopele:
+	 mov	 ah,0
 	 cmp	 [player.col],0
 	 je	 .naocolidiu1
 
-	 mov	[player.gcount],1
+
 	 mov	eax,[player.y]
 	 mov	[player.py],eax
 	 mov	[player.col],0
+	 mov	ah,1
 	.naocolidiu1:
+	 mov	[player.gcount],ah
 	 mov	eax,[player.py]
 	 mov	[player.y],eax
 
