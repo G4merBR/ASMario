@@ -9,14 +9,20 @@ import java.awt.datatransfer.StringSelection;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.image.BufferedImage;
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Stack;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -37,7 +43,7 @@ public class Principal extends BasicGame
 	ArrayList<Tile> elements,selected,tileclipboard;
 	Stack<Tile> undo;
 	boolean isErasing,eraseToggle,collision,isDragging;
-	int size,brushsize,xinitselection,yinitselection,count;
+	int size,brushsize,xinitselection,yinitselection,count,generateSize;
 	float scale;
 	float offset;
 	float offset_final;
@@ -123,7 +129,7 @@ public class Principal extends BasicGame
 	{
 		
 		super(gamename);
-		
+		generateSize=20;
 		color=new java.awt.Color(1f,1f,1f);
 		elements=new ArrayList<Tile>();
 		selected=new ArrayList<Tile>();
@@ -178,7 +184,33 @@ public class Principal extends BasicGame
 		
 
 	}
-
+	public String geraCodigo(){
+		String Final="";
+		for(int i=0;i<elements.size();i++){
+			Tile element=elements.get(i);
+			Color cor=element.getC();
+			if(i!=0)
+				Final+="\n";
+		
+			Final+="GameObject "+((element.getX()/scale)-offset_final)+","+(((-element.getY()/scale)+offset_final-0.03f))+","+element.getW()/scale+","+element.getH()/scale+","+(element.collision?1:0)+","+cor.getRed()/255f+","+cor.getGreen()/255f+","+cor.getBlue()/255f;
+		}
+		Final+="\nchaosize dd "+elements.size();
+		return Final;
+	}
+	public void carregaCodigo(String load,int foffset){
+		load=load.replaceAll("GameObject ", "");
+		String[] toLoad=load.split("\n");
+		for(int i=0;i<toLoad.length-1;i++){
+			
+			String[] elemento= toLoad[i].split(",");
+			int tilex=(int)(Math.floor((Float.parseFloat(elemento[0])+offset_final)*scale-(int)foffset)/(int)size)*((int) size);
+			int tiley=(int)-(Math.floor((Float.parseFloat(elemento[1])-offset_final+0.03f)*scale)/(int)size)*((int) size);
+	
+			
+			addTile(tilex,tiley,new Color(Float.parseFloat(elemento[5]),Float.parseFloat(elemento[6]),Float.parseFloat(elemento[7])),elemento[4].equals("1"));
+		}
+		//System.out.print(load);
+	}
 	@Override
 	public void render(GameContainer gc, Graphics g) throws SlickException
 	{
@@ -292,7 +324,7 @@ public class Principal extends BasicGame
 			if(input.isKeyPressed(Input.KEY_V)){
 				for(int i=0;i<tileclipboard.size();i++){
 					Tile element= tileclipboard.get(i);
-					addTile((int) (element.getX()+(xpos-offset)),element.getY()+ypos,element.getC(),element.collision);
+					addTile((int) (element.getX()+xpos-offset),element.getY()+ypos,element.getC(),element.collision);
 				}
 			}
 			if(input.isKeyPressed(Input.KEY_Z)){
@@ -300,6 +332,50 @@ public class Principal extends BasicGame
 				if(!elements.remove(element))
 					elements.add(element);
 				
+			}
+			if(input.isKeyPressed(Input.KEY_S)){
+				File folder = new File("structures/");
+				File[] listOfFiles = folder.listFiles();
+				
+				PrintWriter writer;
+				try {
+					writer = new PrintWriter("structures/"+listOfFiles.length+".joe", "UTF-8");
+					writer.write(geraCodigo());
+					writer.close();
+				} catch (FileNotFoundException | UnsupportedEncodingException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			
+			}
+			if(input.isKeyPressed(Input.KEY_G)){
+	
+				File folder = new File("structures/");
+				File[] listOfFiles = folder.listFiles();
+				for(int i=0;i<generateSize;i++){
+					int rand=ThreadLocalRandom.current().nextInt(0, listOfFiles.length );
+					if(i==0||i==1){
+						rand=0;
+					}
+					
+					try(BufferedReader br = new BufferedReader(new FileReader("structures/"+rand+".joe"))) {
+					    StringBuilder sb = new StringBuilder();
+					    String line = br.readLine();
+	
+					    while (line != null) {
+					        sb.append(line);
+					        sb.append(System.lineSeparator());
+					        line = br.readLine();
+					    }
+					    carregaCodigo(sb.toString(),+i*-640);
+					} catch (FileNotFoundException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
 			}
 
 			if (input.isMouseButtonDown(0)) {
@@ -428,17 +504,7 @@ public class Principal extends BasicGame
 			
 			//Gera Codigo
 			if (input.isKeyPressed(Input.KEY_S)){
-				String Final="";
-				for(int i=0;i<elements.size();i++){
-					Tile element=elements.get(i);
-					Color cor=element.getC();
-					if(i!=0)
-						Final+="\n";
-				
-					Final+="GameObject "+((element.getX()/scale)-offset_final)+","+(((-element.getY()/scale)+offset_final-0.03f))+","+element.getW()/scale+","+element.getH()/scale+","+(element.collision?1:0)+","+cor.getRed()/255f+","+cor.getGreen()/255f+","+cor.getBlue()/255f;
-				}
-				Final+="\nchaosize dd "+elements.size();
-
+				String Final=geraCodigo();
 				StringSelection selection = new StringSelection(Final);
 			    Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
 			    clipboard.setContents(selection, selection);
@@ -448,20 +514,10 @@ public class Principal extends BasicGame
 			if (input.isKeyPressed(Input.KEY_L)){
 				
 				 Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+				 
 				 try {
-					String load= (String) clipboard.getData(DataFlavor.stringFlavor);
-					load=load.replaceAll("GameObject ", "");
-					String[] toLoad=load.split("\n");
-					for(int i=0;i<toLoad.length-1;i++){
-						
-						String[] elemento= toLoad[i].split(",");
-						int tilex=(int)(Math.floor((Float.parseFloat(elemento[0])+offset_final)*scale-(int)offset)/(int)size)*((int) size);
-						int tiley=(int)-(Math.floor((Float.parseFloat(elemento[1])-offset_final+0.03f)*scale)/(int)size)*((int) size);
-				
-						
-						addTile(tilex,tiley,new Color(Float.parseFloat(elemento[5]),Float.parseFloat(elemento[6]),Float.parseFloat(elemento[7])),elemento[4].equals("1"));
-					}
-					//System.out.print(load);
+					 String load= (String) clipboard.getData(DataFlavor.stringFlavor);
+					 carregaCodigo(load,(int)offset);
 					
 				} catch (UnsupportedFlavorException | IOException e) {
 					
