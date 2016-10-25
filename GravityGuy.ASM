@@ -101,7 +101,7 @@ proc WindowProc hwnd,wmsg,wparam,lparam
 	 cmp	 [screen],1
 	 je	.ingameclock
 	 invoke glLoadIdentity
-	jmp	.render
+	 jmp	 .render
 	.ingameclock:
 	;Aumenta Velocidade com o Tempo
 	mov	[aux],0.00001
@@ -110,8 +110,6 @@ proc WindowProc hwnd,wmsg,wparam,lparam
 	faddp
 	fstp	[player.v]
 
-       ; cmp	  [player.gcount],1
-	;je	 .ngrav
 	call	.godown
 	.ngrav:
 	fld	[minx]
@@ -505,6 +503,26 @@ proc WindowProc hwnd,wmsg,wparam,lparam
 	jmp	.finish
 
   .inverteg:
+       push ebp
+	mov ebp, esp
+	cmp	[screen],1
+	je	.skipreset
+	;Reset
+	mov	[player.x],0.0
+	mov	[player.y],0.0
+	mov	[player.px],0.0
+	mov	[player.py],0.0
+	mov	[minx],-1.3
+	mov	[miny],-1.3
+	mov	[maxx],1.3
+	mov	[maxy],1.2
+	mov	[player.y],0.0
+	mov	[player.v],0.012
+	mov	[player.g],0.032
+	mov	[player.col],0
+	mov	[screen],1
+	jmp	.finverteg
+	.skipreset:
 	mov	[screen],1
 	cmp	[player.gcount],1
 	jne	.finverteg
@@ -513,6 +531,8 @@ proc WindowProc hwnd,wmsg,wparam,lparam
 	fchs
 	fstp	[player.g]
 	.finverteg:
+	mov esp, ebp
+	pop ebp
 	ret
    .goup:
 	push ebp
