@@ -39,20 +39,21 @@ import org.newdawn.slick.geom.Rectangle;
 
 public class Principal extends BasicGame
 {
+
 	java.awt.Color color;
 	ArrayList<Tile> elements,selected,tileclipboard;
 	Stack<Tile> undo;
-	boolean isErasing,eraseToggle,collision,isDragging;
+	boolean isErasing,eraseToggle,isDragging;
 	int size,brushsize,xinitselection,yinitselection,count,generateSize;
 	float scale;
 	float offset;
 	float offset_final;
-	int xc,yc;
+	int xc,yc,collision;
 	public class Tile{
 		private int x,y,w,h;
 		private Color c,originalcolor;
-		public boolean collision;
-		public Tile(int x,int y,int w,int h,Color c,boolean collision){
+		public int collision;
+		public Tile(int x,int y,int w,int h,Color c,int collision){
 			this.x=x;
 			this.y=y;
 			this.w=w;
@@ -129,7 +130,7 @@ public class Principal extends BasicGame
 	{
 		
 		super(gamename);
-		generateSize=20;
+		generateSize=13;
 		color=new java.awt.Color(1f,1f,1f);
 		elements=new ArrayList<Tile>();
 		selected=new ArrayList<Tile>();
@@ -141,12 +142,13 @@ public class Principal extends BasicGame
 		offset=0;	
 		size=10;
 		eraseToggle=false;
-		collision=true;
+		collision=1;
 		//Conversao
 		//320 escala padrao
 		scale=320;
 		offset_final=1f;
 		brushsize=0;
+		
 	}
 
 	@Override
@@ -154,7 +156,7 @@ public class Principal extends BasicGame
 
 	@Override
 	public void update(GameContainer gc, int i) throws SlickException {}
-	public void addTile(int xpos,int ypos,Color brushcolor,boolean collision){
+	public void addTile(int xpos,int ypos,Color brushcolor,int collision){
 		boolean existe=false;
 		
 		for(int i=0;i<elements.size();i++){
@@ -192,7 +194,7 @@ public class Principal extends BasicGame
 			if(i!=0)
 				Final+="\n";
 		
-			Final+="GameObject "+((element.getX()/scale)-offset_final)+","+(((-element.getY()/scale)+offset_final-0.03f))+","+element.getW()/scale+","+element.getH()/scale+","+(element.collision?1:0)+","+cor.getRed()/255f+","+cor.getGreen()/255f+","+cor.getBlue()/255f;
+			Final+="GameObject "+((element.getX()/scale)-offset_final)+","+(((-element.getY()/scale)+offset_final-0.03f))+","+element.getW()/scale+","+element.getH()/scale+","+(element.collision)+","+cor.getRed()/255f+","+cor.getGreen()/255f+","+cor.getBlue()/255f;
 		}
 		Final+="\nchaosize dd "+elements.size();
 		return Final;
@@ -207,7 +209,7 @@ public class Principal extends BasicGame
 			int tiley=(int)-(Math.floor((Float.parseFloat(elemento[1])-offset_final+0.03f)*scale)/(int)size)*((int) size);
 	
 			
-			addTile(tilex,tiley,new Color(Float.parseFloat(elemento[5]),Float.parseFloat(elemento[6]),Float.parseFloat(elemento[7])),elemento[4].equals("1"));
+			addTile(tilex,tiley,new Color(Float.parseFloat(elemento[5]),Float.parseFloat(elemento[6]),Float.parseFloat(elemento[7])),Integer.parseInt(elemento[4]));
 		}
 		//System.out.print(load);
 	}
@@ -232,9 +234,10 @@ public class Principal extends BasicGame
 			Tile element=elements.get(i);
 			g.setColor(element.getC());
 			g.fillRect(element.getX()+offset, element.getY(), element.getW(), element.getH());	
-			if(element.collision){
+			if(element.collision>0){
 				g.setColor(new Color(1.0f,0.0f,0.0f));
 				g.drawRect(element.getX()+offset,  element.getY(),element.getW(), element.getH());
+				g.drawString(""+element.collision, element.getX()+offset,  element.getY()-3);
 			}
 		}	
 
@@ -333,13 +336,14 @@ public class Principal extends BasicGame
 					elements.add(element);
 				
 			}
+			//Gerador de Cenarios
 			if(input.isKeyPressed(Input.KEY_S)){
 				File folder = new File("structures/");
 				File[] listOfFiles = folder.listFiles();
 				
 				PrintWriter writer;
 				try {
-					writer = new PrintWriter("structures/"+listOfFiles.length+".joe", "UTF-8");
+					writer = new PrintWriter("structures/"+(listOfFiles.length-2)+".joe", "UTF-8");
 					writer.write(geraCodigo());
 					writer.close();
 				} catch (FileNotFoundException | UnsupportedEncodingException e) {
@@ -353,9 +357,15 @@ public class Principal extends BasicGame
 				File folder = new File("structures/");
 				File[] listOfFiles = folder.listFiles();
 				for(int i=0;i<generateSize;i++){
-					int rand=ThreadLocalRandom.current().nextInt(0, listOfFiles.length );
-					if(i==0||i==1){
+					int rand=ThreadLocalRandom.current().nextInt(0, listOfFiles.length-2 );
+					if(i==0){
+						rand=-1;
+					}
+					if(i==1){
 						rand=0;
+					}
+					if(i==(generateSize/3)-2){
+						rand=-2;
 					}
 					
 					try(BufferedReader br = new BufferedReader(new FileReader("structures/"+rand+".joe"))) {
@@ -413,7 +423,7 @@ public class Principal extends BasicGame
 					          int  green = (clr & 0x0000ff00) >> 8;
 					          int  blue  =  clr & 0x000000ff;
 					    
-					          addTile((int)(xpos-offset)+x*size,ypos+y*size,new Color(red,green,blue),false);
+					          addTile((int)(xpos-offset)+x*size,ypos+y*size,new Color(red,green,blue),0);
 					    }
 					}
 				} catch (Exception e) {
@@ -526,7 +536,7 @@ public class Principal extends BasicGame
 			}
 			//Colisao
 			if (input.isKeyPressed(Input.KEY_X)){
-				collision=!collision;
+				collision=(collision+1)%4;
 			}
 			//Pega Cor
 			if (input.isKeyPressed(Input.KEY_C)){
@@ -547,13 +557,13 @@ public class Principal extends BasicGame
 				count++;
 			}
 			else if(input.isKeyDown(Input.KEY_LEFT)){
-				if(offset<0){
+				//if(offset<0){
 					if(count>=10){
 					offset+=size;
 					count=0;
 					}	
 					count++;
-				}
+				//}
 			}
 			else
 				count=0;
@@ -572,7 +582,7 @@ public class Principal extends BasicGame
 			brushcolor=new Color(0.56f,0.72f,1.0f);
 		g.setColor(brushcolor);
 		g.fillRect(xpos, ypos, size+brushsize, size+brushsize);
-		if(collision || isErasing)
+		if(collision>0 || isErasing)
 			g.setColor(new Color(1.0f,0.0f,0.0f));
 			g.drawRect(xpos, ypos, size+brushsize, size+brushsize);
 		
