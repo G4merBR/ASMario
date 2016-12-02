@@ -37,6 +37,23 @@
 
 	@@:
      }
+     macro casoscolisao wheretogo {
+	cmp	ah,2
+	jne    @f
+	stdcall tocamusica,_looney
+	mov    [screen],3
+	jmp	wheretogo
+	@@:
+
+
+	;Inverter
+	cmp	ah,3
+	jne    @f
+	mov   [toinvert],1
+	jmp    wheretogo
+	@@:
+
+     }
 
       .nextframe:
 
@@ -52,6 +69,10 @@
 	local aux3:DWORD
 
 
+      ;  mov	 ah,47
+       ; mov	 [_ptitulo+11],ah
+       ; invoke SetWindowText,[hwnd],_ptitulo
+
 
 
 	;Aumenta Velocidade com o Tempo
@@ -63,7 +84,7 @@
 	@@:
 	suf	  [player.v],[player.v],[aux]
 	.fimsub:
-	call	.godown ;aplica Gravidade
+	jmp    .godown ;aplica Gravidade
 
 	.ngrav:
 	;Atualiza Bordas e Move Camera
@@ -141,7 +162,9 @@
 
 	jmp    .live
 	.die:
+	 stdcall tocamusica,_slap
 	mov	[screen],2
+	jmp	.morto
 	.live:
 	;Desenha Chao
 	mov	eax,0
@@ -202,7 +225,7 @@
 	ja     .fimcolisao
 	;Eixo Y
 	;one.Position.y + one.Size.y >= two.Position.y &&
-	fld	[player.py]
+	fld	[player.y]
 	fld	[player.sy]
 	faddp
 	fstp   [aux]
@@ -226,7 +249,7 @@
 	faddp
 	fstp	[aux]
 	fld    [aux]
-	fld    [player.py]
+	fld    [player.y]
 	fcompp
 	fstsw ax
 	fwait
@@ -236,18 +259,7 @@
 ;	;Colidiu
 	mov	ah,[chao+ebx+16]
        ;Fim da Fase
-	cmp	ah,2
-	jne    @f
-	mov    [screen],3
-	jmp    .fimcolisao
-	@@:
-
-	;Inverter
-	cmp	ah,3
-	jne    @f
-	mov   [toinvert],1
-	jmp    .fimcolisao
-	@@:
+       casoscolisao .fimcolisao
 	mov    [player.col],1
 
 	.fimcolisao:
@@ -361,7 +373,11 @@
 	jmp	.renderplayer
 
 	.endrenderplayer:
-
+       ; Texto
+	;invoke    glRasterPos2i,[player.x],0
+       ; invoke  wglUseFontBitmapsA,[hdc],0,255,1000
+      ;  invoke glListBase,1000
+       ; invoke glCallLists,24, GL_UNSIGNED_BYTE,_pcorpo
 
 
 	invoke	SwapBuffers,[hdc]
@@ -393,6 +409,7 @@
 	mov	[screen],1
 	cmp	[player.gcount],1
 	jne	.finverteg
+	stdcall tocamusica,_invert
 	mov	[player.gcount],0
 	fld	[player.g]
 	fchs
@@ -417,8 +434,6 @@
 	 mov	[toinvert],1
 	 ret
    .godown:
-	;push ebp
-       ; mov ebp, esp
 
 	fld	[player.y]
 	fld	[player.g]
@@ -516,19 +531,7 @@
 ;	;Colidiu
 
 	 ;Fim da Fase
-	cmp	ah,2
-	jne    @f
-	mov    [screen],3
-	jmp    .fimcolisao1
-	@@:
-
-
-	;Inverter
-	cmp	ah,3
-	jne    @f
-	mov   [toinvert],1
-	jmp    .fimcolisao1
-	@@:
+	 casoscolisao .fimcolisao1
 
 	 mov	[player.col],1
 	.fimcolisao1:
@@ -549,10 +552,8 @@
 	 mov	[player.y],eax
 
 
-       ; mov esp, ebp
-       ; pop ebp
 	jmp .ngrav
-	ret
+
    .goright:
 	push ebp
 	mov ebp, esp

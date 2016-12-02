@@ -11,3 +11,19 @@
 	call	[MessageBoxA]
 	ret
      endp
+
+     proc randd max
+	invoke	time
+	mov	 edi,eax
+	invoke	  srand
+	invoke	  rand
+	cdq
+	idiv	 [max]
+	mov	eax,edx
+	ret
+      endp
+      proc tocamusica nome
+      ;13 - repete
+	invoke	PlaySound,[nome],NULL,5
+	ret
+       endp

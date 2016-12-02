@@ -17,16 +17,17 @@ include 'funcoes.inc'
 
 	invoke	GetModuleHandle,0
 	mov	[wc.hInstance],eax
-	invoke	LoadIcon,0,IDI_APPLICATION
+	invoke	LoadIcon,0,IDI_ASTERISK
 	mov	[wc.hIcon],eax
 	invoke	LoadCursor,0,IDC_ARROW
 	mov	[wc.hCursor],eax
 	invoke	RegisterClass,wc
 
-
-
+       ; stdcall randd,2
+	 ;stdcall tocamusica,_looney
 	invoke	CreateWindowEx,0,_class,_title,WS_VISIBLE+WS_OVERLAPPEDWINDOW+WS_CLIPCHILDREN+WS_CLIPSIBLINGS,16,16,700,700,NULL,NULL,[wc.hInstance],NULL
 	mov	[hwnd],eax
+	;stdcall tocamusica,_looney
 
   msg_loop:
 	invoke	GetMessage,msg,NULL,0,0
@@ -195,6 +196,10 @@ section '.data' data readable writeable
  include 'morte.inc'
  include 'fim.inc'
 
+
+
+ 
+
   wc WNDCLASS 0,WindowProc,0,0,NULL,NULL,NULL,NULL,NULL,_class
 
   hwnd dd ?
@@ -213,7 +218,17 @@ section '.idata' import data readable writeable
 	  user,'USER32.DLL',\
 	  gdi,'GDI32.DLL',\
 	  opengl,'OPENGL32.DLL',\
-	  glu,'GLU32.DLL'
+	  glu,'GLU32.DLL',\
+	   msvcrt,'msvcrt.dll',\
+	   winmm,'winmm.dll'
+
+import msvcrt,\
+       rand,'rand',\
+       srand,'srand',\
+       time,'time'
+
+  import winmm ,\
+	 PlaySound,'PlaySoundA'
 
   import kernel,\
 	 GetModuleHandle,'GetModuleHandleA',\
@@ -233,7 +248,8 @@ section '.idata' import data readable writeable
 	 GetDC,'GetDC',\
 	 ReleaseDC,'ReleaseDC',\
 	 PostQuitMessage,'PostQuitMessage',\
-	 MessageBoxA,'MessageBoxA'
+	 MessageBoxA,'MessageBoxA',\
+	 SetWindowText,'SetWindowTextA'
 
   import gdi,\
 	 ChoosePixelFormat,'ChoosePixelFormat',\
@@ -685,4 +701,7 @@ section '.idata' import data readable writeable
 	 gluTessProperty,'gluTessProperty',\
 	 gluTessVertex,'gluTessVertex',\
 	 gluUnProject,'gluUnProject'
+
+
+
   section '.reloc' fixups data readable discardable
