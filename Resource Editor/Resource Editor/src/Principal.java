@@ -364,7 +364,7 @@ public class Principal extends BasicGame
 					if(i==1){
 						rand=0;
 					}
-					if(i==(generateSize/3)-2){
+					if(i==(generateSize)-2){
 						rand=-2;
 					}
 					

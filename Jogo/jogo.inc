@@ -82,6 +82,18 @@
 	sf	 [player.v],[player.v],[aux]
 	jmp	 .fimsub
 	@@:
+	mov	[aux1],-0.012
+	fld	[aux1]
+	fld	[player.v]
+	fcompp
+	fstsw ax
+	fwait
+	sahf
+	jbe	   .subnormal
+	mov	  [aux],0.0001
+	suf	  [player.v],[player.v],[aux]
+	jmp	  .fimsub
+	.subnormal:
 	suf	  [player.v],[player.v],[aux]
 	.fimsub:
 	jmp    .godown ;aplica Gravidade
