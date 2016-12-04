@@ -38,6 +38,7 @@
 	@@:
      }
      macro casoscolisao wheretogo {
+	;Fim da Fase
 	cmp	ah,2
 	jne    @f
 	stdcall tocamusica,_looney
@@ -50,6 +51,13 @@
 	cmp	ah,3
 	jne    @f
 	mov   [toinvert],1
+	jmp    wheretogo
+	@@:
+
+	;Boost
+	cmp	ah,4
+	jne    @f
+	mov   [boost],1
 	jmp    wheretogo
 	@@:
 
@@ -68,20 +76,83 @@
 	local aux2:DWORD
 	local aux3:DWORD
 
+	;Pontuacao
+	;xor	  edx,edx
+	;mov	  eax,[player.x]
+	;mov	  ebx,200
+	;div	  ebx
+	;mov	 [aux],edx
+	;mov	 [aux1],0.0
+	;fld	 [aux]
+	;fld	 [aux1]
+	;fcompp
+	;fstsw ax
+	;fwait
+	;sahf
+	;jne	 @f
 
-      ;  mov	 ah,47
-       ; mov	 [_ptitulo+11],ah
-       ; invoke SetWindowText,[hwnd],_ptitulo
+	;mov	 ah,[pontuacao]
+	;add	 ah,1
+	;mov	 [pontuacao],ah
 
+	;@@:
+	;mov	 ah,[pontuacao]
+	;add	 ah,48
+	;mov	 [_ptitulo+12],ah
+	;invoke SetWindowText,[hwnd],_ptitulo
 
-
-	;Aumenta Velocidade com o Tempo
+	;Aumenta Velocidade com o Tempo, aplica boosts e inversoes
 	mov	 [aux],0.000005
 	cmp	 [toinvert],1
-	je	 @f
+	je	 .inversao
+	cmp	 [boost],1
+	je	.salvaboost
+	cmp	 [boost],2
+	jae	 .boost
+	jmp	 .fimboost
+
+	.salvaboost:
+	 mov	[aux1],0.0
+	 fld	 [oldv]
+	 fld	 [aux1]
+	 fcompp
+	 fstsw ax
+	 fwait
+	 sahf
+	 jne	 .boost
+	 mov	 eax,[player.v]
+	 mov	 [oldv],eax
+	.boost:
+	 cmp	 [boost],50
+	 ja	 .deboost
+
+	 sf	 [oldv],[oldv],[aux]
+	 mov	 [aux],0.001
+	 inc	 [boost]
+
+	 jmp	 .fimboost
+	 .deboost:
+	 mov	   [aux],0.001
+	 suf	   [player.v],[player.v],[aux]
+	 mov	   [aux],0.00
+	 fld	   [player.v]
+	 fld	   [oldv]
+	 fcompp
+	 fstsw ax
+	 fwait
+	 sahf
+	 jb	 .fimsub
+
+	 mov	 eax,[oldv]
+	 mov	 [player.v],eax
+	 mov	 [boost],0
+	 mov	 [oldv],0.0
+	.fimboost:
 	sf	 [player.v],[player.v],[aux]
 	jmp	 .fimsub
-	@@:
+
+
+	.inversao:
 	mov	[aux1],-0.012
 	fld	[aux1]
 	fld	[player.v]
@@ -542,7 +613,6 @@
 
 ;	;Colidiu
 
-	 ;Fim da Fase
 	 casoscolisao .fimcolisao1
 
 	 mov	[player.col],1

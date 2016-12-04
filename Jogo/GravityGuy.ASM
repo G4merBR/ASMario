@@ -141,6 +141,9 @@ section '.data' data readable writeable
   ;2 - Morto
   screen db 0
   toinvert db 0
+  boost    db 0
+  oldv	   dd 0
+  pontuacao db 0
 
   maxx dd 1.3
   minx dd -1.3

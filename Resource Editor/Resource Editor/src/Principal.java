@@ -48,7 +48,8 @@ public class Principal extends BasicGame
 	float scale;
 	float offset;
 	float offset_final;
-	int xc,yc,collision;
+	
+	int xc,yc,collision,collisions;
 	public class Tile{
 		private int x,y,w,h;
 		private Color c,originalcolor;
@@ -148,6 +149,7 @@ public class Principal extends BasicGame
 		scale=320;
 		offset_final=1f;
 		brushsize=0;
+		collisions=4;
 		
 	}
 
@@ -400,16 +402,15 @@ public class Principal extends BasicGame
 				g.setColor(new Color(1.0f,1.0f,1.0f,0.6f));	
 				g.drawRect(xinitselection, yinitselection, xpos-xinitselection, ypos-yinitselection);
 
-						for(int k=0;k<elements.size();k++){
-							Tile element=elements.get(k);
-							if(element.getX()+size>=(xinitselection)&& xinitselection+(xpos-offset-xinitselection)-size>=element.getX() &&element.getY()+size>=yinitselection && yinitselection+(ypos-yinitselection)-size>=element.getY()){
-		
-									element.select();
-									selected.add(element);
+					for(int k=0;k<elements.size();k++){
+						Tile element=elements.get(k);
+						if(element.getX()+size>=(xinitselection)&& xinitselection+(xpos-offset-xinitselection)-size>=element.getX() &&element.getY()+size>=yinitselection && yinitselection+(ypos-yinitselection)-size>=element.getY()){
+							element.select();
+							selected.add(element);
 				
-							}else if(!selected.contains(element)){
-								element.deselect();
-							}
+						}else if(!selected.contains(element)){
+							element.deselect();
+						}
 				}
 
 
@@ -543,7 +544,7 @@ public class Principal extends BasicGame
 			}
 			//Colisao
 			if (input.isKeyPressed(Input.KEY_X)){
-				collision=(collision+1)%4;
+				collision=(collision+1)%(collisions+1);
 			}
 			//Pega Cor
 			if (input.isKeyPressed(Input.KEY_C)){
@@ -594,7 +595,7 @@ public class Principal extends BasicGame
 			g.drawRect(xpos, ypos, size+brushsize, size+brushsize);
 		
 		g.setColor(new Color(1.0f,0.0f,0.0f,0.5f));	
-		g.drawString("\nx:"+xpos+" y:"+ypos, xpos, ypos);
+		g.drawString("\nx:"+xpos+" y:"+ypos+" colisao:"+collision, xpos, ypos);
 		g.drawString("\nasm_x:"+((xpos/scale)-offset_final)+" asm_y:"+((-ypos/scale)+offset_final-0.03f), xpos, ypos+20);
 	}
 
