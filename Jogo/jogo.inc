@@ -112,7 +112,7 @@
 	jmp	 .fimboost
 
 	.salvaboost:
-	 mov	[aux1],0.0
+	 mov	 [aux1],0.0
 	 fld	 [oldv]
 	 fld	 [aux1]
 	 fcompp
@@ -486,6 +486,8 @@
 	mov	[player.g],0.032
 	mov	[player.col],0
 	mov	[toinvert],0
+	mov	[boost],0
+	mov	[oldv],0.0
 	mov	[screen],1
 	jmp	.finverteg
 	.skipreset:
