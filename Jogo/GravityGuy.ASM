@@ -102,18 +102,16 @@ proc WindowProc hwnd,wmsg,wparam,lparam
 
   .wmkeydown:;OnKeyPress
 
-	cmp	[wparam],VK_UP
-	je	.goup
-	cmp	[wparam],VK_DOWN
-	je	.godown
-	cmp	[wparam],VK_LEFT
-	je	.goleft
-	cmp	[wparam],VK_RIGHT
-	je	.goright
+	;cmp	 [wparam],VK_UP
+       ; je	 .goup
+	;cmp	 [wparam],VK_DOWN
+	;je	 .godown
+	;cmp	 [wparam],VK_LEFT
+	;je	 .goleft
+	;cmp	 [wparam],VK_RIGHT
+	;je	 .goright
 	cmp	[wparam],VK_SPACE
-
 	je	.inverteg
-
 
 	cmp	[wparam],VK_ESCAPE
 	jne	.defwndproc

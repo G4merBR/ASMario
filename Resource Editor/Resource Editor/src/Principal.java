@@ -361,10 +361,11 @@ public class Principal extends BasicGame
 				for(int i=0;i<listOfFiles.length;i++){
 					
 					int rand=i-1;
-					if(i==(listOfFiles.length)-2)
+					int ondecolocar=(listOfFiles.length)-4;
+					if(i==ondecolocar)
 						rand=-2;
 					if(i==(listOfFiles.length)-1)
-						rand=i-2;
+						rand=ondecolocar;
 					
 					//int rand=ThreadLocalRandom.current().nextInt(0, listOfFiles.length-2 );
 					/*if(i==0){

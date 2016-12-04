@@ -79,7 +79,7 @@
 	;Pontuacao
 	;xor	  edx,edx
 	;mov	  eax,[player.x]
-	;mov	  ebx,200
+	;mov	  ebx,120
 	;div	  ebx
 	;mov	 [aux],edx
 	;mov	 [aux1],0.0
@@ -89,15 +89,25 @@
 	;fstsw ax
 	;fwait
 	;sahf
-	;jne	 @f
+	;jne	 .atualiza
 
-	;mov	 ah,[pontuacao]
-	;add	 ah,1
+       ; mov	 ah,[pontuacao]
+       ; add	 ah,1
 	;mov	 [pontuacao],ah
 
-	;@@:
-	;mov	 ah,[pontuacao]
+       ;.atualiza:
+       ; mov	 ah,[pontuacao]
+       ; mov	  bh,0
+	;.separaloop:
+	;cmp	  ah,10
+	;jb	  .fimseparacao
+	;inc	  bh
+	;sub	  ah,10
+	;jmp .separaloop
+	;.fimseparacao:
 	;add	 ah,48
+	;add	 bh,48
+	;mov	 [_ptitulo+11],bh
 	;mov	 [_ptitulo+12],ah
 	;invoke SetWindowText,[hwnd],_ptitulo
 
@@ -396,6 +406,7 @@
 	 mov	[player.y],eax
 
 	;Desenha Player
+
 
 	mov	eax,0
 	push	eax	;Salva EAX
