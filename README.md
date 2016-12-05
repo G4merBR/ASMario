@@ -1,6 +1,6 @@
-# GravityGUY
+# GravityDuck
 
-Remake of Gravity GUY made in Flat Assembler + OpenGL
+Remake of Gravity GUY made in Flat Assembler 
 
 #Crew:
 - Joe;
@@ -10,12 +10,12 @@ Remake of Gravity GUY made in Flat Assembler + OpenGL
 
 #TODO:
 - Resource Editor (100%)
-- Mapa
+- Mapa (100%)
 - Gravidade (100%)
-- Multiplayer
-- Colisoes (50%)<br />
+- Som (100%)
+- Colisoes (100%)<br />
 -- Detecção (OK)<br />
 -- Física (OK)<br />
--- Maléfica<br />
--- Benéfica<br />
+-- Boost (OK)<br />
+-- Reverse (OK)<br />
 
