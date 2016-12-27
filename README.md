@@ -3,8 +3,8 @@
 Remake of Gravity GUY made in Flat Assembler 
 
 #Creators
-João "Joe" Vieira - Programmer
-João Morais - Map
+João "Joe" Vieira  [Programmer]<br />
+João Morais [Map maker] <br />
 
 #TODO:
 - Resource Editor (100%)
